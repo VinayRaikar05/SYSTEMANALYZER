@@ -1,7 +1,6 @@
 /* ──────────────────────────────────────────────────────────────
-   System Failure Early Warning Engine – Dashboard Script v2
-   All 7 upgrades: failure prob, SHAP, sensitivity, injection,
-   forecast, multi-server, root cause hints
+   System Failure Early Warning Engine – Enterprise Dashboard
+   Original 7 upgrades + 10 enterprise features
    ────────────────────────────────────────────────────────────── */
 
 const API = '';
@@ -17,7 +16,8 @@ const slider = document.getElementById('sensitivitySlider');
 const sensVal = document.getElementById('sensitivityValue');
 slider.addEventListener('input', () => { sensVal.textContent = slider.value; });
 slider.addEventListener('change', async () => {
-    await fetch(`${API}/settings/sensitivity?value=${slider.value}`, { method: 'POST' });
+    const sid = getServerId();
+    await fetch(`${API}/settings/sensitivity?value=${slider.value}&server_id=${sid}`, { method: 'POST' });
 });
 
 // ── Inject failure button ───────────────────────────────────
@@ -36,6 +36,27 @@ async function injectFailure() {
         btn.classList.add('btn-danger-glow');
         btn.style.background = '';
         injecting = false;
+    }
+}
+
+// ── Retrain model button ────────────────────────────────────
+async function retrainModel() {
+    const btn = event.target;
+    btn.textContent = '⏳ Training...';
+    btn.disabled = true;
+    try {
+        const res = await fetch(`${API}/model/retrain?server_id=${getServerId()}`, { method: 'POST' });
+        const data = await res.json();
+        if (data.status === 'success') {
+            btn.textContent = '✅ Done!';
+            setTimeout(() => { btn.textContent = '🔄 Retrain'; btn.disabled = false; }, 3000);
+        } else {
+            btn.textContent = '❌ Error';
+            setTimeout(() => { btn.textContent = '🔄 Retrain'; btn.disabled = false; }, 3000);
+        }
+    } catch (e) {
+        btn.textContent = '🔄 Retrain';
+        btn.disabled = false;
     }
 }
 
@@ -72,7 +93,6 @@ const netChart = makeChart('netChart', [
     { label: 'Network KB/s', data: [], borderColor: '#00e676', borderWidth: 2, fill: { target: 'origin', above: 'rgba(0,230,118,0.08)' }, tension: 0.3, pointRadius: 0 },
 ]);
 
-// Health chart with forecast
 const healthChart = new Chart(document.getElementById('healthChart'), {
     type: 'line',
     data: {
@@ -85,7 +105,6 @@ const healthChart = new Chart(document.getElementById('healthChart'), {
     options: { ...chartOpts, scales: { ...chartOpts.scales, y: { ...chartOpts.scales.y, min: 0, max: 100 } } }
 });
 
-// SHAP chart (horizontal bar)
 const shapChart = new Chart(document.getElementById('shapChart'), {
     type: 'bar',
     data: { labels: [], datasets: [{ label: 'Contribution', data: [], backgroundColor: [] }] },
@@ -105,24 +124,19 @@ function drawGauge(canvas, value) {
     const ctx = canvas.getContext('2d');
     const w = canvas.width, h = canvas.height;
     const cx = w / 2, cy = h - 5, r = Math.min(w, h) - 15;
-
     ctx.clearRect(0, 0, w, h);
 
-    // Background arc
     ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, 0, false);
     ctx.lineWidth = 14; ctx.strokeStyle = 'rgba(255,255,255,0.06)'; ctx.stroke();
 
-    // Gradient arc
     const grad = ctx.createLinearGradient(0, 0, w, 0);
     grad.addColorStop(0, '#ff1744'); grad.addColorStop(0.5, '#ffab00'); grad.addColorStop(1, '#00e676');
     const angle = Math.PI + (value / 100) * Math.PI;
     ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI, angle, false);
     ctx.lineWidth = 14; ctx.lineCap = 'round'; ctx.strokeStyle = grad; ctx.stroke();
 
-    // Needle
-    const needleAngle = Math.PI + (value / 100) * Math.PI;
-    const nx = cx + (r - 20) * Math.cos(needleAngle);
-    const ny = cy + (r - 20) * Math.sin(needleAngle);
+    const nx = cx + (r - 20) * Math.cos(angle);
+    const ny = cy + (r - 20) * Math.sin(angle);
     ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(nx, ny);
     ctx.lineWidth = 2.5; ctx.strokeStyle = '#fff'; ctx.stroke();
     ctx.beginPath(); ctx.arc(cx, cy, 4, 0, 2 * Math.PI);
@@ -152,6 +166,23 @@ async function pollHealth() {
         document.getElementById('failureProb').style.color = fp > 0.5 ? '#ff1744' : fp > 0.2 ? '#ffab00' : '#00e676';
         document.getElementById('failureMarker').style.left = Math.min(100, fp * 100) + '%';
 
+        // Confidence
+        const conf = d.confidence || 0;
+        const confEl = document.getElementById('confidenceValue');
+        confEl.textContent = conf.toFixed(2);
+        confEl.style.color = conf > 0.7 ? '#ff1744' : conf > 0.4 ? '#ffab00' : '#00e676';
+
+        // Model status pill
+        const pill = document.getElementById('modelStatusPill');
+        const ms = d.model_status || 'active';
+        if (ms === 'fallback_mode') {
+            pill.className = 'status-pill fallback';
+            pill.textContent = '⚠ Fallback';
+        } else {
+            pill.className = 'status-pill active';
+            pill.textContent = '● ML Active';
+        }
+
         // Root cause
         document.getElementById('rootCauseText').textContent = d.root_cause || 'System nominal';
     } catch (e) { console.error('pollHealth', e); }
@@ -167,7 +198,6 @@ async function pollMetrics() {
         const rows = data.reverse();
         const labels = rows.map((_, i) => i);
 
-        // KPI cards (latest values)
         const latest = rows[rows.length - 1];
         document.getElementById('kpiCpu').textContent = latest.cpu.toFixed(1) + '%';
         document.getElementById('kpiMem').textContent = latest.memory.toFixed(1) + '%';
@@ -175,7 +205,6 @@ async function pollMetrics() {
         document.getElementById('kpiResp').textContent = latest.response_time.toFixed(0) + ' ms';
         document.getElementById('kpiNet').textContent = latest.network.toFixed(1) + ' KB/s';
 
-        // Line charts
         cpuMemChart.data.labels = labels;
         cpuMemChart.data.datasets[0].data = rows.map(r => r.cpu);
         cpuMemChart.data.datasets[1].data = rows.map(r => r.memory);
@@ -202,32 +231,26 @@ async function pollHealthHistory() {
         const rows = data.reverse();
         const labels = rows.map((_, i) => i);
 
-        // Timeline dots
         const tl = document.getElementById('timeline');
         tl.innerHTML = rows.map(r =>
             `<span class="timeline-dot ${r.anomaly_flag ? 'anomaly' : 'normal'}"></span>`
         ).join('');
 
-        // Health history line
         healthChart.data.labels = labels;
         healthChart.data.datasets[0].data = rows.map(r => r.health_score);
 
-        // Fetch forecast
         try {
             const fRes = await fetch(`${API}/health/forecast?server_id=${sid}`);
             const forecast = await fRes.json();
             if (forecast.forecast && forecast.forecast.length > 0) {
-                // Extend labels for forecast
                 const forecastLabels = [...labels];
                 const forecastData = new Array(rows.length).fill(null);
-                // Connect forecast to last point
                 forecastData[rows.length - 1] = rows[rows.length - 1].health_score;
                 for (let i = 0; i < forecast.forecast.length; i++) {
                     forecastLabels.push(labels.length + i);
                     forecastData.push(forecast.forecast[i]);
                 }
                 healthChart.data.labels = forecastLabels;
-                // Pad the health data with nulls
                 healthChart.data.datasets[0].data = [...rows.map(r => r.health_score), ...new Array(forecast.forecast.length).fill(null)];
                 healthChart.data.datasets[1].data = forecastData;
             }
@@ -279,12 +302,77 @@ async function pollServers() {
     } catch (e) { /* optional */ }
 }
 
-// ── Init ────────────────────────────────────────────────────
-async function pollAll() {
-    await Promise.all([pollHealth(), pollMetrics(), pollHealthHistory(), pollAlerts(), pollShap()]);
+// ── Enterprise polling ──────────────────────────────────────
+async function pollDrift() {
+    try {
+        const res = await fetch(`${API}/model/drift-status`);
+        const d = await res.json();
+
+        const pill = document.getElementById('driftPill');
+        if (d.drift_detected) {
+            pill.style.display = 'inline-flex';
+            pill.className = 'status-pill drift';
+            pill.textContent = '⚠ DRIFT';
+        } else {
+            pill.style.display = 'none';
+        }
+
+        document.getElementById('entDriftStatus').textContent = d.drift_detected ? '⚠ DETECTED' : '✅ Normal';
+        document.getElementById('entDriftStatus').style.color = d.drift_detected ? '#ff1744' : '#00e676';
+        document.getElementById('entAnomalyRate').textContent = (d.anomaly_rate * 100).toFixed(1) + '%';
+        document.getElementById('entAnomalyRate').style.color = d.anomaly_rate > 0.06 ? '#ff1744' : '#00e676';
+    } catch (e) { /* optional */ }
 }
 
+async function pollEnterprise() {
+    try {
+        // Performance stats (may require API key — fails gracefully)
+        const perfRes = await fetch(`${API}/system/performance`);
+        if (perfRes.ok) {
+            const p = await perfRes.json();
+            document.getElementById('entLatency').textContent = p.avg_inference_latency_ms.toFixed(1) + ' ms';
+            document.getElementById('entReqMin').textContent = p.requests_per_minute;
+            document.getElementById('entMemory').textContent = p.app_memory_mb.toFixed(0) + ' MB';
+        }
+    } catch (e) { /* optional */ }
+
+    try {
+        // Model info (may require API key)
+        const infoRes = await fetch(`${API}/model/info`);
+        if (infoRes.ok) {
+            const m = await infoRes.json();
+            document.getElementById('entModelStatus').textContent = m.model_status === 'active' ? '✅ Active' : '⚠ Fallback';
+            document.getElementById('entModelStatus').style.color = m.model_status === 'active' ? '#00e676' : '#ffab00';
+            document.getElementById('entModelVer').textContent = m.model_version || 'v1.0';
+        }
+    } catch (e) { /* optional */ }
+}
+
+// ── Load per-server sensitivity ─────────────────────────────
+async function loadSensitivity() {
+    try {
+        const res = await fetch(`${API}/settings?server_id=${getServerId()}`);
+        const d = await res.json();
+        slider.value = d.sensitivity;
+        sensVal.textContent = d.sensitivity;
+    } catch (e) { /* optional */ }
+}
+
+// ── Init ────────────────────────────────────────────────────
+async function pollAll() {
+    await Promise.all([pollHealth(), pollMetrics(), pollHealthHistory(), pollAlerts(), pollShap(), pollDrift()]);
+}
+
+loadSensitivity();
 pollServers();
 pollAll();
+pollEnterprise();
 setInterval(pollAll, POLL_MS);
+setInterval(pollEnterprise, 10000);
 setInterval(pollServers, 15000);
+
+// Reload sensitivity when server changes
+document.getElementById('serverSelect').addEventListener('change', () => {
+    loadSensitivity();
+    pollAll();
+});

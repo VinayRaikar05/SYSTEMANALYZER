@@ -1,20 +1,24 @@
 """
-Risk Engine
------------
-• compute_health_score    – anomaly score → health (0–100) with severity penalty
+Risk Engine — Enterprise Edition
+----------------------------------
+• compute_health_score    – anomaly score → health (0–100) with severity penalty + sensitivity
 • compute_metric_severity – raw metric penalty for sustained high load
 • evaluate_risk           – anomaly frequency → GREEN/YELLOW/RED
 • should_alert            – detect risk escalation
-• diagnose_root_cause     – identify which signal is the primary issue
+• diagnose_root_cause     – identify primary issue
+• rule_based_anomaly_check – fallback when ML model unavailable
 """
 
 from __future__ import annotations
+
+from backend.logging_config import get_logger
+
+logger = get_logger("risk_engine")
 
 
 def compute_metric_severity(metrics: dict) -> int:
     """Compute a severity penalty (0–40) based on extreme raw metric values."""
     penalty = 0
-
     cpu = metrics.get("cpu", 0)
     mem = metrics.get("memory", 0)
     disk = metrics.get("disk_io", 0)
@@ -28,11 +32,9 @@ def compute_metric_severity(metrics: dict) -> int:
     elif mem > 78:  penalty += 5
     elif mem > 72:  penalty += 2
 
-    # Disk I/O penalty (MB/s)
     if disk > 80:   penalty += 8
     elif disk > 50: penalty += 4
 
-    # Response time penalty (ms)
     if resp > 250:   penalty += 10
     elif resp > 180: penalty += 5
 
@@ -44,13 +46,9 @@ def compute_health_score(
     metrics: dict | None = None,
     sensitivity: int = 5,
 ) -> int:
-    """
-    Map Isolation Forest score to 0–100, apply severity penalty.
-    sensitivity: 1 (loose) to 10 (strict) — scales the anomaly interpretation.
-    """
-    # Sensitivity scales the anomaly score: higher sensitivity = more reactive
-    sens_mult = 0.6 + (sensitivity / 10) * 0.8  # range 0.68 – 1.4
-    adj_score = anomaly_score / sens_mult  # more negative = worse at high sensitivity
+    """Map Isolation Forest score to 0–100, apply severity penalty."""
+    sens_mult = 0.6 + (sensitivity / 10) * 0.8
+    adj_score = anomaly_score / sens_mult
 
     if adj_score >= 0.15:
         base = min(100, int(92 + adj_score * 20))
@@ -87,10 +85,7 @@ def should_alert(prev_risk: str, new_risk: str) -> str | None:
 
 
 def diagnose_root_cause(metrics: dict) -> str:
-    """
-    Analyse raw metrics and return a human-readable root cause hint.
-    Returns the dominant issue or 'System nominal' if nothing is elevated.
-    """
+    """Return a human-readable root cause hint for the dominant issue."""
     issues: list[tuple[float, str]] = []
 
     cpu = metrics.get("cpu", 0)
@@ -115,3 +110,23 @@ def diagnose_root_cause(metrics: dict) -> str:
 
     issues.sort(key=lambda x: x[0], reverse=True)
     return issues[0][1]
+
+
+def rule_based_anomaly_check(metrics: dict) -> tuple[float, bool, int]:
+    """
+    Fallback anomaly detection when ML model is unavailable.
+    Returns (pseudo_score, is_anomaly, health_score).
+    """
+    penalty = compute_metric_severity(metrics)
+
+    if penalty >= 20:
+        score, anomaly, health = -0.3, True, max(0, 40 - penalty)
+    elif penalty >= 10:
+        score, anomaly, health = -0.1, True, max(30, 65 - penalty)
+    elif penalty >= 5:
+        score, anomaly, health = 0.0, False, 80 - penalty
+    else:
+        score, anomaly, health = 0.15, False, 92
+
+    logger.info(f"Rule-based fallback: penalty={penalty}, health={health}, anomaly={anomaly}")
+    return score, anomaly, max(0, min(100, health))

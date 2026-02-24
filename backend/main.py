@@ -1,43 +1,61 @@
 """
-FastAPI Application – System Failure Early Warning Engine v2
-=============================================================
-All 7 Upgrades integrated:
- 1. Failure probability prediction
- 2. SHAP explainability
- 3. Sensitivity slider
- 4. Failure injection mode
- 5. Health trend forecast
- 6. Multi-server support
- 7. Root cause hints
+FastAPI Application – Enterprise AI Observability Platform
+============================================================
+All 7 original upgrades + 10 enterprise features:
+ 1-7.  Original: failure prob, SHAP, sensitivity, injection, forecast, multi-server, root cause
+ 8.    Model retraining with versioning
+ 9.    Concept drift detection
+ 10.   Per-server sensitivity (DB-backed)
+ 11.   API key authentication
+ 12.   Structured logging
+ 13.   Performance monitoring metrics
+ 14.   Model metadata endpoint
+ 15.   Confidence scoring
+ 16.   Graceful degradation mode
+ 17.   Automated remediation hook
 """
 
 from __future__ import annotations
 
 import asyncio
 import datetime as dt
+import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 import numpy as np
 import psutil
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
+
+# ── Setup logging FIRST ──────────────────────────────────────────────────────
+from backend.logging_config import setup_logging, get_logger
+setup_logging()
+logger = get_logger("main")
 
 from backend.database import (
     init_db, get_db,
     insert_metric, get_recent_metrics,
     insert_health_record, get_recent_health,
     insert_alert, get_recent_alerts, get_server_ids,
+    get_server_sensitivity, set_server_sensitivity,
 )
 from backend.feature_engineering import compute_features
-from backend.model import predict, explain
+from backend.model import predict, explain, get_model_info
 from backend.risk_engine import (
-    compute_health_score, evaluate_risk, should_alert, diagnose_root_cause,
+    compute_health_score, evaluate_risk, should_alert,
+    diagnose_root_cause, rule_based_anomaly_check,
 )
 from backend.failure_predictor import predict_failure_probability
+from backend.drift_detector import drift_detector
+from backend.performance_monitor import record_inference_latency, record_request, get_performance_stats
+from backend.retraining import retrain_isolation_forest, get_retraining_info
+from backend.remediation import trigger_remediation
+from backend.auth import require_api_key
+
 
 # ── Pydantic schemas ──────────────────────────────────────────────────────────
 
@@ -57,11 +75,9 @@ FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
 _prev_risk: str = "GREEN"
 _bg_task: asyncio.Task | None = None
-_sensitivity: int = 5          # 1-10
-_inject_mode: bool = False     # failure injection flag
-_inject_remaining: int = 0     # how many injections left
+_inject_mode: bool = False
+_inject_remaining: int = 0
 _latest_explain: list[dict] = []
-_latest_data: dict = {}
 
 _prev_disk = psutil.disk_io_counters()
 _prev_net = psutil.net_io_counters()
@@ -70,8 +86,9 @@ _prev_net = psutil.net_io_counters()
 # ── Pipeline ──────────────────────────────────────────────────────────────────
 
 def _run_pipeline(data: dict) -> dict | None:
-    global _prev_risk, _latest_explain, _latest_data
+    global _prev_risk, _latest_explain
 
+    t0 = time.time()
     server_id = data.pop("server_id", "local")
     data_with_sid = {**data, "server_id": server_id}
 
@@ -90,12 +107,30 @@ def _run_pipeline(data: dict) -> dict | None:
         if features is None:
             return None
 
-        anomaly_score, is_anomaly = predict(features)
-        health_score = compute_health_score(anomaly_score, metrics=data, sensitivity=_sensitivity)
+        # Get per-server sensitivity
+        sensitivity = get_server_sensitivity(db, server_id)
 
-        # SHAP explanation
-        _latest_explain = explain(features)
-        _latest_data = data
+        # ML prediction with confidence (graceful degradation built into predict)
+        anomaly_score, is_anomaly, confidence = predict(features)
+
+        # Check model status
+        model_info = get_model_info()
+        model_status = model_info.get("model_status", "active")
+
+        # If in fallback mode, use rule-based detection
+        if model_status == "fallback_mode":
+            anomaly_score, is_anomaly, health_score = rule_based_anomaly_check(data)
+            confidence = 0.5
+            logger.warning("Using rule-based fallback for anomaly detection")
+        else:
+            health_score = compute_health_score(anomaly_score, metrics=data, sensitivity=sensitivity)
+
+        # SHAP explanation (skip in fallback mode)
+        if model_status != "fallback_mode":
+            _latest_explain = explain(features)
+
+        # Drift tracking
+        drift_detector.record(is_anomaly, health_score)
 
         # Risk evaluation
         health_rows = get_recent_health(db, limit=10, server_id=server_id)
@@ -103,7 +138,7 @@ def _run_pipeline(data: dict) -> dict | None:
         recent_flags.insert(0, is_anomaly)
         risk_level = evaluate_risk(recent_flags)
 
-        # Root cause hint
+        # Root cause
         root_cause = diagnose_root_cause(data)
 
         # Failure probability
@@ -116,28 +151,32 @@ def _run_pipeline(data: dict) -> dict | None:
 
         now = dt.datetime.now()
         health_data = {
-            "server_id": server_id,
-            "timestamp": now,
-            "health_score": health_score,
-            "anomaly_score": anomaly_score,
-            "anomaly_flag": is_anomaly,
-            "risk_level": risk_level,
-            "failure_prob": failure_prob,
-            "root_cause": root_cause,
+            "server_id": server_id, "timestamp": now,
+            "health_score": health_score, "anomaly_score": anomaly_score,
+            "anomaly_flag": is_anomaly, "risk_level": risk_level,
+            "failure_prob": failure_prob, "root_cause": root_cause,
+            "confidence": confidence, "model_status": model_status,
         }
         insert_health_record(db, health_data)
 
         # Alert on escalation
         alert_severity = should_alert(_prev_risk, risk_level)
         if alert_severity:
+            alert_msg = (
+                f"Risk escalated to {risk_level} — {root_cause} "
+                f"(health={health_score}, failure_prob={failure_prob:.1%}, "
+                f"confidence={confidence:.2f})"
+            )
             insert_alert(db, {
-                "server_id": server_id,
-                "timestamp": now,
-                "severity": alert_severity,
-                "message": f"Risk escalated to {risk_level} — {root_cause} "
-                           f"(health={health_score}, failure_prob={failure_prob:.1%})",
+                "server_id": server_id, "timestamp": now,
+                "severity": alert_severity, "message": alert_msg,
             })
+            logger.warning(f"ALERT [{alert_severity}]: {alert_msg}")
+
         _prev_risk = risk_level
+
+        # Record performance
+        record_inference_latency(time.time() - t0)
 
         return {
             "timestamp": now.isoformat(),
@@ -147,7 +186,12 @@ def _run_pipeline(data: dict) -> dict | None:
             "risk_level": risk_level,
             "failure_prob": failure_prob,
             "root_cause": root_cause,
+            "confidence": round(confidence, 4),
+            "model_status": model_status,
         }
+    except Exception as e:
+        logger.error(f"Pipeline error: {e}", exc_info=True)
+        return None
     finally:
         db.close()
 
@@ -182,7 +226,6 @@ def _collect_real_metrics() -> dict:
 
 
 def _generate_failure_metrics() -> dict:
-    """Simulated failure spike for demo injection."""
     return {
         "cpu": round(float(np.clip(RNG.normal(92, 5), 80, 100)), 2),
         "memory": round(float(np.clip(RNG.normal(90, 4), 82, 99)), 2),
@@ -206,7 +249,7 @@ async def _metric_loop() -> None:
                 data = _collect_real_metrics()
             _run_pipeline(data)
         except Exception as exc:
-            print(f"[metric_loop] error: {exc}")
+            logger.error(f"Metric loop error: {exc}", exc_info=True)
         await asyncio.sleep(2)
 
 
@@ -216,25 +259,29 @@ async def _metric_loop() -> None:
 async def lifespan(app: FastAPI):
     global _bg_task
     init_db()
+    logger.info("System Failure Early Warning Engine started")
     _bg_task = asyncio.create_task(_metric_loop())
     yield
     _bg_task.cancel()
+    logger.info("Engine shut down")
 
 
-app = FastAPI(title="System Failure Early Warning Engine", version="2.0.0", lifespan=lifespan)
+app = FastAPI(title="System Failure Early Warning Engine", version="3.0.0", lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 
-# ── API endpoints ─────────────────────────────────────────────────────────────
+# ── Middleware: request counter ───────────────────────────────────────────────
 
-@app.post("/ingest-metrics")
-def ingest_metrics(payload: MetricIn):
-    data = payload.model_dump()
-    result = _run_pipeline(data)
-    if result is None:
-        return {"status": "buffering", "message": "Need more data points"}
-    return {"status": "ok", "health": result}
+@app.middleware("http")
+async def perf_middleware(request, call_next):
+    record_request()
+    response = await call_next(request)
+    return response
 
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PUBLIC ENDPOINTS (no auth required)
+# ══════════════════════════════════════════════════════════════════════════════
 
 @app.get("/health")
 def health(server_id: str = "local"):
@@ -243,7 +290,8 @@ def health(server_id: str = "local"):
         rows = get_recent_health(db, limit=1, server_id=server_id)
         if not rows:
             return {"health_score": 100, "risk_level": "GREEN", "anomaly_score": 0.0,
-                    "anomaly_flag": False, "failure_prob": 0.0, "root_cause": "System nominal"}
+                    "anomaly_flag": False, "failure_prob": 0.0, "root_cause": "System nominal",
+                    "confidence": 0.0, "model_status": "active"}
         r = rows[0]
         return {
             "timestamp": r.timestamp.isoformat() if r.timestamp else None,
@@ -253,6 +301,8 @@ def health(server_id: str = "local"):
             "risk_level": r.risk_level,
             "failure_prob": r.failure_prob or 0.0,
             "root_cause": r.root_cause or "System nominal",
+            "confidence": round(r.confidence or 0.0, 4),
+            "model_status": r.model_status or "active",
         }
     finally:
         db.close()
@@ -283,14 +333,125 @@ def health_history(limit: int = 50, server_id: str = "local"):
             {"timestamp": r.timestamp.isoformat() if r.timestamp else None,
              "health_score": r.health_score, "anomaly_score": round(r.anomaly_score, 4),
              "anomaly_flag": r.anomaly_flag, "risk_level": r.risk_level,
-             "failure_prob": r.failure_prob or 0.0, "root_cause": r.root_cause or ""}
+             "failure_prob": r.failure_prob or 0.0, "root_cause": r.root_cause or "",
+             "confidence": round(r.confidence or 0.0, 4), "model_status": r.model_status or "active"}
             for r in rows
         ]
     finally:
         db.close()
 
 
-@app.get("/alerts")
+@app.get("/health/forecast")
+def health_forecast(server_id: str = "local"):
+    db = get_db()
+    try:
+        rows = get_recent_health(db, limit=20, server_id=server_id)
+        if len(rows) < 5:
+            return {"forecast": [], "slope": 0}
+        scores = [r.health_score for r in reversed(rows)]
+        x = np.arange(len(scores))
+        coeffs = np.polyfit(x, scores, 1)
+        forecast = [max(0, min(100, round(float(coeffs[0] * (len(scores) + i) + coeffs[1]))))
+                    for i in range(1, 61)]
+        return {"forecast": forecast, "slope": round(float(coeffs[0]), 3)}
+    finally:
+        db.close()
+
+
+@app.get("/explain")
+def get_explanation():
+    return {"contributions": _latest_explain}
+
+
+@app.get("/servers")
+def list_servers():
+    db = get_db()
+    try:
+        return {"servers": get_server_ids(db)}
+    finally:
+        db.close()
+
+
+@app.get("/settings")
+def get_settings(server_id: str = "local"):
+    db = get_db()
+    try:
+        return {"sensitivity": get_server_sensitivity(db, server_id), "server_id": server_id}
+    finally:
+        db.close()
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PROTECTED ENDPOINTS (require API key when auth is enabled)
+# ══════════════════════════════════════════════════════════════════════════════
+
+@app.post("/ingest-metrics", dependencies=[Depends(require_api_key)])
+def ingest_metrics(payload: MetricIn):
+    data = payload.model_dump()
+    result = _run_pipeline(data)
+    if result is None:
+        return {"status": "buffering", "message": "Need more data points"}
+    return {"status": "ok", "health": result}
+
+
+@app.post("/settings/sensitivity", dependencies=[Depends(require_api_key)])
+def set_sensitivity(value: int = Query(ge=1, le=10), server_id: str = "local"):
+    db = get_db()
+    try:
+        set_server_sensitivity(db, server_id, value)
+        logger.info(f"Sensitivity changed to {value} for server {server_id}")
+        return {"sensitivity": value, "server_id": server_id}
+    finally:
+        db.close()
+
+
+@app.post("/simulate/failure", dependencies=[Depends(require_api_key)])
+def simulate_failure(count: int = 10):
+    global _inject_mode, _inject_remaining
+    _inject_mode = True
+    _inject_remaining = count
+    logger.warning(f"Failure injection started: {count} spikes")
+    return {"status": "injecting", "count": count}
+
+
+@app.post("/simulate/stop", dependencies=[Depends(require_api_key)])
+def simulate_stop():
+    global _inject_mode, _inject_remaining
+    _inject_mode = False
+    _inject_remaining = 0
+    logger.info("Failure injection stopped")
+    return {"status": "stopped"}
+
+
+# ── Enterprise: Model management ─────────────────────────────────────────────
+
+@app.get("/model/info", dependencies=[Depends(require_api_key)])
+def model_info():
+    return get_model_info()
+
+
+@app.get("/model/drift-status")
+def drift_status():
+    return drift_detector.status()
+
+
+@app.post("/model/retrain", dependencies=[Depends(require_api_key)])
+def retrain_model(server_id: str = "local"):
+    logger.info(f"Manual retrain triggered for {server_id}")
+    result = retrain_isolation_forest(server_id=server_id)
+    return result
+
+
+# ── Enterprise: System performance ───────────────────────────────────────────
+
+@app.get("/system/performance", dependencies=[Depends(require_api_key)])
+def system_performance():
+    return get_performance_stats()
+
+
+# ── Enterprise: Alerts (protected) ───────────────────────────────────────────
+
+@app.get("/alerts", dependencies=[Depends(require_api_key)])
 def alerts(limit: int = 20, server_id: str = "local"):
     db = get_db()
     try:
@@ -304,80 +465,17 @@ def alerts(limit: int = 20, server_id: str = "local"):
         db.close()
 
 
-# ── Upgrade 2: SHAP Explain ──────────────────────────────────────────────────
+# ── Enterprise: Remediation ──────────────────────────────────────────────────
 
-@app.get("/explain")
-def get_explanation():
-    return {"contributions": _latest_explain}
-
-
-# ── Upgrade 3: Sensitivity ───────────────────────────────────────────────────
-
-@app.get("/settings")
-def get_settings():
-    return {"sensitivity": _sensitivity}
-
-
-@app.post("/settings/sensitivity")
-def set_sensitivity(value: int = Query(ge=1, le=10)):
-    global _sensitivity
-    _sensitivity = value
-    return {"sensitivity": _sensitivity}
-
-
-# ── Upgrade 4: Failure Injection ─────────────────────────────────────────────
-
-@app.post("/simulate/failure")
-def simulate_failure(count: int = 10):
-    global _inject_mode, _inject_remaining
-    _inject_mode = True
-    _inject_remaining = count
-    return {"status": "injecting", "count": count}
-
-
-@app.post("/simulate/stop")
-def simulate_stop():
-    global _inject_mode, _inject_remaining
-    _inject_mode = False
-    _inject_remaining = 0
-    return {"status": "stopped"}
-
-
-# ── Upgrade 5: Health Forecast ───────────────────────────────────────────────
-
-@app.get("/health/forecast")
-def health_forecast(server_id: str = "local"):
+@app.post("/remediation/trigger", dependencies=[Depends(require_api_key)])
+def remediation_trigger(server_id: str = "local"):
     db = get_db()
     try:
-        rows = get_recent_health(db, limit=20, server_id=server_id)
-        if len(rows) < 5:
-            return {"forecast": [], "slope": 0}
-
-        scores = [r.health_score for r in reversed(rows)]  # oldest first
-        x = np.arange(len(scores))
-        coeffs = np.polyfit(x, scores, 1)
-        slope = coeffs[0]
-
-        # Project 60 points into the future (2 minutes at 2s intervals)
-        forecast = []
-        for i in range(1, 61):
-            projected = coeffs[0] * (len(scores) + i) + coeffs[1]
-            forecast.append(max(0, min(100, round(float(projected)))))
-
-        return {"forecast": forecast, "slope": round(float(slope), 3)}
+        rows = get_recent_health(db, limit=1, server_id=server_id)
+        risk = rows[0].risk_level if rows else "GREEN"
     finally:
         db.close()
-
-
-# ── Upgrade 6: Server list ──────────────────────────────────────────────────
-
-@app.get("/servers")
-def list_servers():
-    db = get_db()
-    try:
-        return {"servers": get_server_ids(db)}
-    finally:
-        db.close()
+    return trigger_remediation(server_id=server_id, risk_level=risk)
 
 
 # ── Serve frontend ────────────────────────────────────────────────────────────

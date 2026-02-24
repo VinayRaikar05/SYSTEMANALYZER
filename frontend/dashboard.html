@@ -308,6 +308,72 @@
             background: #fff;
             transition: left 0.5s;
         }
+
+        .enterprise-bar {
+            background: var(--bg-card);
+            border-radius: 14px;
+            padding: 12px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .enterprise-bar .stat {
+            text-align: center;
+        }
+
+        .enterprise-bar .stat .label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+        }
+
+        .enterprise-bar .stat .val {
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+
+        .status-pill.active {
+            background: rgba(0, 230, 118, 0.15);
+            color: var(--accent-green);
+        }
+
+        .status-pill.fallback {
+            background: rgba(255, 171, 0, 0.15);
+            color: var(--accent-amber);
+        }
+
+        .status-pill.drift {
+            background: rgba(255, 23, 68, 0.15);
+            color: var(--accent-red);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
     </style>
 </head>
 
@@ -326,7 +392,9 @@
                 <span id="sensitivityValue">5</span>
             </div>
             <button id="injectBtn" class="btn-danger-glow" onclick="injectFailure()">💥 Inject Failure</button>
-            <span><span class="live-dot"></span> Real-time monitoring</span>
+            <span class="status-pill active" id="modelStatusPill">● ML Active</span>
+            <span class="status-pill" id="driftPill" style="display:none">⚠ Drift</span>
+            <span><span class="live-dot"></span> Real-time</span>
         </div>
     </div>
 
@@ -389,17 +457,25 @@
                     <div class="root-cause-text mt-2" id="rootCauseText">System nominal</div>
                 </div>
             </div>
-            <!-- Risk + Anomaly Score -->
-            <div class="col-md-2">
+            <!-- Risk + Anomaly + Confidence -->
+            <div class="col-md-3">
                 <div class="gauge-card">
-                    <div class="gauge-label">Risk Level</div>
-                    <div class="mt-2"><span class="risk-badge green" id="riskBadge">● GREEN</span></div>
-                    <div class="gauge-label mt-3">Anomaly Score</div>
-                    <div style="font-size:1.3rem; font-weight:700;" id="anomalyScore">0.0000</div>
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="gauge-label">Risk Level</div>
+                            <div class="mt-2"><span class="risk-badge green" id="riskBadge">● GREEN</span></div>
+                        </div>
+                        <div class="text-end">
+                            <div class="gauge-label">Confidence</div>
+                            <div style="font-size:1.6rem; font-weight:800;" id="confidenceValue">0.00</div>
+                        </div>
+                    </div>
+                    <div class="gauge-label mt-2">Anomaly Score</div>
+                    <div style="font-size:1.1rem; font-weight:700;" id="anomalyScore">0.0000</div>
                 </div>
             </div>
             <!-- Anomaly Timeline -->
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="gauge-card">
                     <div class="gauge-label">Anomaly Timeline (last 60)</div>
                     <div id="timeline" class="mt-2" style="line-height:1.8;"></div>
@@ -461,6 +537,47 @@
                             </thead>
                             <tbody></tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── ROW 6: ENTERPRISE STATUS BAR ──────────────────────── -->
+        <div class="row g-3 mb-3">
+            <div class="col-12">
+                <div class="enterprise-bar">
+                    <div class="stat">
+                        <div class="label">Model Status</div>
+                        <div class="val" id="entModelStatus">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="label">Model Version</div>
+                        <div class="val" id="entModelVer">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="label">Drift Status</div>
+                        <div class="val" id="entDriftStatus">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="label">Anomaly Rate</div>
+                        <div class="val" id="entAnomalyRate">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="label">Avg Latency</div>
+                        <div class="val" id="entLatency">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="label">Req/min</div>
+                        <div class="val" id="entReqMin">—</div>
+                    </div>
+                    <div class="stat">
+                        <div class="label">App Memory</div>
+                        <div class="val" id="entMemory">—</div>
+                    </div>
+                    <div class="stat">
+                        <button class="btn btn-sm"
+                            style="background:rgba(0,229,255,0.15);color:var(--accent-cyan);border:none;font-weight:600;"
+                            onclick="retrainModel()">🔄 Retrain</button>
                     </div>
                 </div>
             </div>

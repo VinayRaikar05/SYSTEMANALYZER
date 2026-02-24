@@ -1,0 +1,24 @@
+2026-02-24 22:59:55 | INFO     | main                      | System Failure Early Warning Engine started
+2026-02-24 23:00:03 | INFO     | model                     | Model loaded in 0.028s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-02-24 23:00:14 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (83%) — Possible memory leak or cache bloat (health=59, failure_prob=0.0%, confidence=0.56)
+2026-02-24 23:00:20 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (83%) — Possible memory leak or cache bloat (health=56, failure_prob=1.6%, confidence=0.59)
+2026-02-24 23:05:45 | INFO     | auth                      | API auth DISABLED (no API_KEYS env var set)
+2026-02-24 23:05:49 | INFO     | main                      | Sensitivity changed to 7 for server local
+2026-02-24 23:11:16 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (85%) — Possible memory leak or cache bloat (health=54, failure_prob=0.1%, confidence=0.92)
+2026-02-24 23:11:18 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Network (1011 KB/s) — Heavy data transfer (health=55, failure_prob=0.2%, confidence=0.90)
+2026-02-24 23:15:11 | INFO     | main                      | Sensitivity changed to 8 for server local
+2026-02-24 23:15:31 | INFO     | main                      | System Failure Early Warning Engine started
+2026-02-24 23:15:31 | INFO     | model                     | Model loaded in 0.034s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-02-24 23:15:33 | INFO     | main                      | Engine shut down
+2026-02-24 23:17:36 | WARNING  | main                      | Failure injection started: 10 spikes
+2026-02-24 23:17:40 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — Heavy Disk I/O (91.1 MB/s) — Large file operations or swap activity (health=2, failure_prob=92.9%, confidence=0.95)
+2026-02-24 23:17:42 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High CPU (97%) — Check compute-heavy processes (health=11, failure_prob=99.4%, confidence=0.92)
+2026-02-24 23:17:48 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-02-24 23:18:08 | INFO     | main                      | Sensitivity changed to 5 for server local
+2026-02-24 23:19:20 | INFO     | main                      | Manual retrain triggered for local
+2026-02-24 23:19:20 | INFO     | retraining                | Retraining started for server_id=local
+2026-02-24 23:19:23 | INFO     | retraining                | Backed up isolation_model.pkl → isolation_model.pkl.20260224_231923.bak
+2026-02-24 23:19:23 | INFO     | retraining                | Backed up failure_model.pkl → failure_model.pkl.20260224_231923.bak
+2026-02-24 23:19:24 | INFO     | retraining                | Retraining complete: version=v2.20260224_231924, samples=2995, time=3.5s
+2026-02-24 23:19:25 | INFO     | model                     | Model loaded in 0.122s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-02-24 23:19:47 | INFO     | main                      | Engine shut down
