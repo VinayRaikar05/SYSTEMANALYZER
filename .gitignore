@@ -17,3 +17,5 @@ data/system.db
 # OS
 Thumbs.db
 .DS_Store
+
+PROJECT_GUIDE.md
