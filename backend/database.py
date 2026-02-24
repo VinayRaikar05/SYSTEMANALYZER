@@ -1,8 +1,9 @@
 """
-Database layer – SQLite via SQLAlchemy.
-
-Tables: raw_metrics, health_records, alerts
+Database layer – Enterprise Edition
+-------------------------------------
+Tables: raw_metrics, health_records, alerts, server_configs
 All tables include server_id for multi-server support.
+ServerConfig stores per-server sensitivity and settings.
 """
 
 from __future__ import annotations
@@ -54,6 +55,8 @@ class HealthRecord(Base):
     risk_level = Column(String(10), nullable=False)
     failure_prob = Column(Float, default=0.0)
     root_cause = Column(String(200), default="System nominal")
+    confidence = Column(Float, default=0.0)
+    model_status = Column(String(20), default="active")
 
 
 class Alert(Base):
@@ -64,6 +67,15 @@ class Alert(Base):
     timestamp = Column(DateTime, default=dt.datetime.now)
     severity = Column(String(20), nullable=False)
     message = Column(String(500), nullable=False)
+
+
+class ServerConfig(Base):
+    __tablename__ = "server_configs"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    server_id = Column(String(50), unique=True, nullable=False, index=True)
+    sensitivity = Column(Integer, default=5)
+    updated_at = Column(DateTime, default=dt.datetime.now, onupdate=dt.datetime.now)
 
 
 # ── Create tables ─────────────────────────────────────────────────────────────
@@ -135,3 +147,22 @@ def get_recent_alerts(db: Session, limit: int = 20, server_id: str = "local") ->
 def get_server_ids(db: Session) -> list[str]:
     rows = db.query(RawMetric.server_id).distinct().all()
     return [r[0] for r in rows] if rows else ["local"]
+
+
+# ── Server Config CRUD ───────────────────────────────────────────────────────
+
+def get_server_sensitivity(db: Session, server_id: str = "local") -> int:
+    cfg = db.query(ServerConfig).filter(ServerConfig.server_id == server_id).first()
+    return cfg.sensitivity if cfg else 5
+
+
+def set_server_sensitivity(db: Session, server_id: str, value: int) -> int:
+    cfg = db.query(ServerConfig).filter(ServerConfig.server_id == server_id).first()
+    if cfg:
+        cfg.sensitivity = value
+        cfg.updated_at = dt.datetime.now()
+    else:
+        cfg = ServerConfig(server_id=server_id, sensitivity=value)
+        db.add(cfg)
+    db.commit()
+    return value
