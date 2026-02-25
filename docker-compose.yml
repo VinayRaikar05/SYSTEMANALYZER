@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  engine:
+    build: .
+    container_name: system-failure-engine
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persist database and logs across restarts
+      - engine-data:/app/data
+      - engine-logs:/app/logs
+      # Give psutil access to host metrics (Linux only)
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    environment:
+      # Set your API keys for production (comma-separated)
+      - API_KEYS=${API_KEYS:-}
+      # Host proc for accurate psutil readings
+      - HOST_PROC=/host/proc
+    pid: "host" # Required for psutil to see host processes
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  engine-data:
+  engine-logs:
