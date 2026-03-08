@@ -1,7 +1,7 @@
 # ═══════════════════════════════════════════════════════════════════
 # AI-BASED SYSTEM FAILURE EARLY WARNING ENGINE
 # COMPLETE PROJECT GUIDE — Architecture, Logic & Code Walkthrough
-# Enterprise Edition v3.0
+# v4.0
 # ═══════════════════════════════════════════════════════════════════
 
 ---
@@ -16,27 +16,26 @@
 6. [model.py — Anomaly Detection + Confidence + SHAP](#6-modelpy)
 7. [risk_engine.py — Health Score + Root Cause + Fallback](#7-risk_enginepy)
 8. [failure_predictor.py — Failure Probability](#8-failure_predictorpy)
-9. [database.py — ORM + ServerConfig](#9-databasepy)
+9. [database.py — ORM](#9-databasepy)
 10. [train_model.py — Real Data Training](#10-train_modelpy)
 11. [drift_detector.py — Concept Drift](#11-drift_detectorpy)
 12. [retraining.py — Model Lifecycle](#12-retrainingpy)
 13. [auth.py — API Authentication](#13-authpy)
 14. [logging_config.py — Structured Logging](#14-logging_configpy)
-15. [performance_monitor.py — Observability](#15-performance_monitorpy)
-16. [remediation.py — Automated Response](#16-remediationpy)
-17. [main.py — FastAPI Server (18 Endpoints)](#17-mainpy)
-18. [Frontend Dashboard](#18-frontend-dashboard)
-19. [The 17 Features Summary](#19-all-features)
-20. [How to Run](#20-how-to-run)
-21. [Verification Results](#21-verification-results)
+15. [captcha.py — CAPTCHA Verification](#15-captchapy)
+16. [main.py — FastAPI Server (13 Endpoints)](#16-mainpy)
+17. [Frontend Dashboard](#17-frontend-dashboard)
+18. [All Features Summary](#18-all-features)
+19. [How to Run](#19-how-to-run)
+20. [Verification Results](#20-verification-results)
 
 ---
 
 ## 1. PROJECT OVERVIEW
 
-This is an **enterprise-grade AI observability platform** that:
+This is an **AI-powered system monitoring platform** that:
 
-- **Monitors** real system metrics (CPU, Memory, Disk, Network) via psutil every 2 seconds
+- **Monitors** real system metrics (CPU, Memory, Disk I/O, Process Count, Network) via psutil every 1 second
 - **Detects anomalies** using Isolation Forest (unsupervised ML, 200 trees)
 - **Predicts failures** using Logistic Regression (0–100% probability)
 - **Explains decisions** with SHAP (which features caused the anomaly?)
@@ -45,9 +44,7 @@ This is an **enterprise-grade AI observability platform** that:
 - **Self-retrains** on recent data with model versioning
 - **Authenticates** API access with X-API-KEY headers
 - **Logs everything** to rotating structured log files
-- **Monitors its own performance** (inference latency, memory usage)
 - **Falls back gracefully** to rule-based detection if ML model fails
-- **Triggers remediation** hooks when risk is critical
 
 **All ML runs locally using Scikit-learn — no external AI APIs.**
 
@@ -57,7 +54,7 @@ This is an **enterprise-grade AI observability platform** that:
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│                    EVERY 2 SECONDS                               │
+│                    EVERY 1 SECOND                                │
 │                                                                  │
 │  psutil → Feature Engineering (30 features)                     │
 │         → Isolation Forest (anomaly score + confidence)         │
@@ -66,14 +63,12 @@ This is an **enterprise-grade AI observability platform** that:
 │         → Failure Predictor (probability 0-100%)                │
 │         → Drift Detector (rolling anomaly rate tracking)        │
 │         → Root Cause Diagnosis (human-readable hint)            │
-│         → SQLite Storage (4 tables, server_id indexed)          │
+│         → SQLite Storage (3 tables)                             │
 │         → Alert Generation (if risk escalated)                  │
 │         → Structured Logging (logs/system.log)                  │
-│         → Performance Tracking (latency, req/min)               │
 │                                                                  │
-│  FastAPI (18 endpoints + auth middleware)                        │
-│         → Dashboard (Chart.js + Bootstrap 5)                    │
-│         → Enterprise Status Bar (drift, latency, retrain btn)  │
+│  FastAPI (10 endpoints + auth)                                   │
+│         → Dashboard (Chart.js + Bootstrap 5, 1s polling)        │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
@@ -83,10 +78,10 @@ This is an **enterprise-grade AI observability platform** that:
 
 ```
 d:\PROJECTS\SYSTEM\
-├── backend/                          # 13 Python modules
+├── backend/                          # 12 Python modules
 │   ├── __init__.py                   # Package marker
-│   ├── main.py                       # FastAPI app, 18 endpoints, pipeline
-│   ├── database.py                   # SQLite ORM (4 tables + CRUD)
+│   ├── main.py                       # FastAPI app, 13 endpoints, pipeline
+│   ├── database.py                   # SQLite ORM (3 tables + CRUD)
 │   ├── feature_engineering.py        # Raw metrics → 30 features
 │   ├── model.py                      # Isolation Forest + SHAP + confidence
 │   ├── risk_engine.py                # Health score + risk + root cause + fallback
@@ -94,17 +89,21 @@ d:\PROJECTS\SYSTEM\
 │   ├── train_model.py               # Training script (60s real data)
 │   ├── drift_detector.py            # Concept drift detection
 │   ├── retraining.py                # Model retraining + versioning
+│   ├── captcha.py                   # Math CAPTCHA generation + verification
 │   ├── auth.py                      # API key authentication
-│   ├── logging_config.py            # Structured logging config
-│   ├── performance_monitor.py       # Latency + request tracking
-│   └── remediation.py               # Automated remediation hooks
+│   └── logging_config.py            # Structured logging config
 ├── frontend/
-│   ├── dashboard.html               # Enterprise monitoring UI
-│   └── script.js                    # Chart.js + enterprise polling
+│   ├── dashboard.html               # Real-time monitoring UI
+│   ├── captcha.html                 # CAPTCHA verification page
+│   └── script.js                    # Chart.js + 1s live polling
 ├── models/                          # Trained models + versioned backups
 ├── logs/                            # Structured logs (auto-created)
 ├── data/                            # SQLite database (auto-created)
-└── requirements.txt
+├── Dockerfile                       # Docker container configuration
+├── .dockerignore                    # Docker build exclusions
+├── .gitignore                       # Git-tracked file exclusions
+├── .gitattributes                   # Git line-ending configuration
+└── requirements.txt                 # Python dependencies
 ```
 
 ---
@@ -120,7 +119,7 @@ numpy>=1.26.0          # Numerical computing
 joblib>=1.4.0          # Model serialization
 aiosqlite>=0.20.0      # Async SQLite
 sqlalchemy[asyncio]    # ORM
-psutil                 # System metrics (CPU, Memory, Disk, Network)
+psutil                 # System metrics (CPU, Memory, Disk, Process Count, Network)
 shap                   # SHAP explainability
 ```
 
@@ -131,6 +130,14 @@ shap                   # SHAP explainability
 **Purpose:** Converts a window of 5 raw metric readings into a 30-dimensional feature vector.
 
 **5 signals × 6 features each = 30 total:**
+
+| Signal | What It Measures |
+|--------|-----------------|
+| `cpu` | CPU usage percentage |
+| `memory` | RAM usage percentage |
+| `disk_io` | Disk read+write rate (MB/s) |
+| `process_count` | Number of running processes |
+| `network` | Network throughput (KB/s) |
 
 | Feature | What It Measures | Why It Matters |
 |---------|-----------------|----------------|
@@ -152,8 +159,6 @@ def compute_features(rows: list[dict]) -> np.ndarray | None:
 ## 6. model.py
 
 **Purpose:** ML prediction with confidence scoring and graceful degradation.
-
-**Key changes in Enterprise Edition:**
 
 ```python
 def predict(features) -> tuple[float, bool, float]:
@@ -184,7 +189,7 @@ normalized = (s_max - score) / (s_max - s_min)  # 0=normal, 1=anomaly
 
 **Purpose:** Maps ML output to human-understandable health scores, risk levels, and root cause hints.
 
-**Health Score Mapping (sensitivity-adjusted):**
+**Health Score Mapping:**
 ```
 anomaly_score >= 0.15  → health 92-100 (clearly normal)
 anomaly_score >= 0.05  → health 85-92
@@ -195,11 +200,16 @@ anomaly_score < -0.25  → health 0-25   (severe)
 - severity penalty subtracted for extreme raw values (up to -40)
 ```
 
-**Rule-based fallback (Upgrade 9):**
+**Severity penalties:**
+- CPU > 90% → penalty 12, > 80% → 7, > 75% → 3
+- Memory > 88% → penalty 10, > 78% → 5, > 72% → 2
+- Disk I/O > 80 MB/s → penalty 8, > 50 → 4
+- Process Count > 400 → penalty 10, > 300 → 5, > 250 → 2
+
+**Rule-based fallback:**
 ```python
 def rule_based_anomaly_check(metrics) -> tuple[score, is_anomaly, health]:
     # Used when ML model is unavailable
-    # Checks: CPU>90 → penalty 12, Memory>88 → penalty 10, etc.
     # Returns pseudo-score, anomaly flag, and rule-based health score
 ```
 
@@ -226,28 +236,27 @@ def rule_based_anomaly_check(metrics) -> tuple[score, is_anomaly, health]:
 
 ## 9. database.py
 
-**4 tables (Enterprise Edition adds `ServerConfig`):**
+**3 tables:**
 
 | Table | Purpose | Key Columns |
 |-------|---------|-------------|
-| `raw_metrics` | Store psutil readings | cpu, memory, disk_io, response_time, network |
-| `health_records` | Pipeline output | health_score, anomaly_score, failure_prob, **confidence**, **model_status** |
+| `raw_metrics` | Store psutil readings | cpu, memory, disk_io, process_count, network |
+| `health_records` | Pipeline output | health_score, anomaly_score, failure_prob, confidence, model_status |
 | `alerts` | Risk escalation events | severity (CRITICAL/WARNING), message |
-| `server_configs` | **Per-server settings** | server_id, sensitivity |
-
-All tables indexed by `server_id` for multi-server filtering.
 
 ---
 
 ## 10. train_model.py
 
 **Training pipeline:**
-1. Collects 60 seconds of real psutil data (~118 samples)
-2. Augments with gaussian noise to 3000 samples
-3. Computes 30 features per sample
-4. Trains Isolation Forest (n_estimators=200, contamination=0.02)
-5. Generates 500 normal + 500 failure synthetic scenarios
-6. Trains Logistic Regression for failure probability
+1. Collects 60 seconds of real psutil data (~120 samples at 0.5s intervals)
+2. Uses `time.monotonic()` for accurate disk I/O (MB/s) and network (KB/s) rate calculations
+3. Captures real process count via `psutil.pids()`
+4. Augments with gaussian noise to 3000 samples
+5. Computes 30 features per sample
+6. Trains Isolation Forest (n_estimators=200, contamination=0.02)
+7. Generates 500 normal + 500 failure synthetic scenarios
+8. Trains Logistic Regression for failure probability
 
 ---
 
@@ -307,7 +316,7 @@ SUSTAINED_SECONDS = 120  # Must persist for 2 minutes
 # Returns 401 for unauthorized access
 ```
 
-**Protected endpoints:** All POST + `/alerts`, `/model/info`, `/system/performance`
+**Protected endpoints:** `/ingest-metrics`, `/model/retrain`, `/model/info`
 
 ---
 
@@ -326,133 +335,117 @@ SUSTAINED_SECONDS = 120  # Must persist for 2 minutes
 - Risk escalations and alert triggers
 - Retraining events
 - Drift detection warnings
-- Sensitivity changes
 - Auth failures
-- Remediation actions
+- CAPTCHA generation and verification
 
 ---
 
-## 15. performance_monitor.py
+## 15. captcha.py
 
-**Tracks:**
-| Metric | How | Window |
-|--------|-----|--------|
-| Inference latency | `time.time()` around pipeline | Last 100 calls |
-| Requests per minute | Timestamp deque | Last 60 seconds |
-| App memory | `psutil.Process().memory_info()` | Current |
+**Purpose:** Self-contained math CAPTCHA system — no external APIs needed.
 
-**Endpoint:** `GET /system/performance` returns:
-```json
-{
-  "avg_inference_latency_ms": 36.2,
-  "max_inference_latency_ms": 54.1,
-  "min_inference_latency_ms": 23.5,
-  "requests_per_minute": 4,
-  "app_memory_mb": 276.0
-}
+**How it works:**
+1. `generate_captcha()` creates a random math problem (addition, subtraction, or multiplication)
+2. Returns a `token` and `question` string (e.g., `"11 + 7 = ?"`)
+3. User submits `token` + `answer` to `verify_captcha()`
+4. On correct answer, a session token is issued (stored in cookie for 24h)
+5. Dashboard route checks this cookie — if invalid/missing, redirects to `/captcha`
+
+**Configuration:**
+```python
+_CAPTCHA_TTL = 300     # Unsolved CAPTCHAs expire after 5 minutes
+_VERIFIED_TTL = 86400  # Session lasts 24 hours
 ```
 
----
-
-## 16. remediation.py
-
-**Purpose:** Simulate automated remediation when risk is RED.
-
-**3 simulated actions:**
-1. **Service restart** — Graceful restart of application service
-2. **Resource scale-up** — Request +2 CPU cores and +4GB RAM
-3. **Cleanup** — Clear temp files, rotate logs, flush caches
-
-All actions logged to `logs/system.log`. Returns JSON with action details.
+**Operations:** Addition, subtraction (never negative), multiplication. Numbers range 2–20.
 
 ---
 
-## 17. main.py
+## 16. main.py
 
-**The heart of the system — 18 endpoints + pipeline + metric collection.**
+**The heart of the system — 13 endpoints + pipeline + metric collection.**
 
-**Pipeline flow (every 2 seconds):**
+**Pipeline flow (every 1 second):**
 ```
 collect_real_metrics() → insert_metric() → compute_features()
-→ predict() [with confidence] → compute_health_score() [with sensitivity]
+→ predict() [with confidence] → compute_health_score()
 → explain() → drift_detector.record() → evaluate_risk()
 → diagnose_root_cause() → predict_failure_probability()
 → insert_health_record() → fire alert if escalated
-→ record_inference_latency()
 ```
 
-**18 Endpoints:**
+**Metric collection accuracy:**
+- Uses `time.monotonic()` to calculate elapsed time between readings
+- Disk I/O rate = bytes delta / (1024² × elapsed seconds) → accurate MB/s
+- Network rate = bytes delta / (1024 × elapsed seconds) → accurate KB/s
+- Process count = `len(psutil.pids())` → real OS process count
+
+**13 Endpoints:**
 
 | # | Method | Path | Auth | Purpose |
 |---|--------|------|------|---------|
-| 1 | GET | `/` | No | Dashboard HTML |
-| 2 | GET | `/health` | No | Latest health + confidence + model_status |
-| 3 | GET | `/metrics/recent` | No | Raw metric history |
-| 4 | GET | `/health/history` | No | Health score time series |
-| 5 | GET | `/health/forecast` | No | 60-point projection |
-| 6 | GET | `/explain` | No | SHAP contributions |
-| 7 | GET | `/servers` | No | Server IDs |
-| 8 | GET | `/settings` | No | Per-server sensitivity |
-| 9 | GET | `/model/drift-status` | No | Drift detection |
-| 10 | POST | `/ingest-metrics` | Yes | Manual metric input |
-| 11 | POST | `/settings/sensitivity` | Yes | Change sensitivity |
-| 12 | POST | `/simulate/failure` | Yes | Inject failure spikes |
-| 13 | POST | `/simulate/stop` | Yes | Stop injection |
-| 14 | POST | `/model/retrain` | Yes | Trigger retraining |
-| 15 | POST | `/remediation/trigger` | Yes | Run remediation |
-| 16 | GET | `/model/info` | Yes | Model metadata |
-| 17 | GET | `/system/performance` | Yes | Performance metrics |
-| 18 | GET | `/alerts` | Yes | Alert log |
+| 1 | GET | `/` | CAPTCHA | Dashboard HTML |
+| 2 | GET | `/captcha` | No | CAPTCHA verification page |
+| 3 | GET | `/captcha/generate` | No | Generate math CAPTCHA |
+| 4 | POST | `/captcha/verify` | No | Verify answer, return session |
+| 5 | GET | `/health` | No | Latest health + confidence + model_status |
+| 6 | GET | `/metrics/recent` | No | Raw metric history |
+| 7 | GET | `/health/history` | No | Health score time series |
+| 8 | GET | `/health/forecast` | No | 60-point projection |
+| 9 | GET | `/explain` | No | SHAP contributions |
+| 10 | GET | `/alerts` | No | Alert log |
+| 11 | GET | `/model/drift-status` | No | Drift detection |
+| 12 | POST | `/ingest-metrics` | API Key | Manual metric input |
+| 13 | POST | `/model/retrain` | API Key | Trigger retraining |
 
 ---
 
-## 18. FRONTEND DASHBOARD
+## 17. FRONTEND DASHBOARD
 
-**Enterprise dashboard elements:**
-- **Top bar:** Server dropdown, sensitivity slider, inject button, ML status pill, drift warning badge
-- **KPI cards:** CPU%, Memory%, Disk I/O, Response Time, Network
+**CAPTCHA page:**
+- Glassmorphism card with animated background orbs
+- Random math challenge (addition, subtraction, multiplication)
+- Correct answer sets session cookie and redirects to dashboard
+
+**Dashboard elements:**
+- **Top bar:** ML status pill, drift warning badge, live indicator (1s polling)
+- **KPI cards:** CPU%, Memory%, Disk I/O (MB/s), Process Count, Network (KB/s)
 - **Gauges:** Health score (canvas arc), Failure probability (gradient bar), Confidence score
-- **Charts:** SHAP bar chart, Health history + forecast, CPU/Memory, Disk/Response, Network
+- **Charts:** SHAP bar chart, Health history + forecast, CPU/Memory, Disk I/O/Processes, Network
 - **Alert log:** Timestamped severity + message table
-- **Enterprise bar:** Model status, version, drift status, anomaly rate, avg latency, req/min, app memory, retrain button
 
 ---
 
-## 19. ALL FEATURES
+## 18. ALL FEATURES
 
-| # | Feature | Type | Module |
-|---|---------|------|--------|
-| 1 | Real-time psutil monitoring | Core | main.py |
-| 2 | 30-feature engineering | Core | feature_engineering.py |
-| 3 | Isolation Forest anomaly detection | Core | model.py |
-| 4 | SHAP explainability | Upgrade 2 | model.py |
-| 5 | Health score (0-100) | Core | risk_engine.py |
-| 6 | Risk levels (GREEN/YELLOW/RED) | Core | risk_engine.py |
-| 7 | Failure probability (0-100%) | Upgrade 1 | failure_predictor.py |
-| 8 | Sensitivity slider (1-10) | Upgrade 3 | risk_engine.py |
-| 9 | Failure injection mode | Upgrade 4 | main.py |
-| 10 | Health trend forecast | Upgrade 5 | main.py |
-| 11 | Multi-server support | Upgrade 6 | database.py |
-| 12 | Root cause hints | Upgrade 7 | risk_engine.py |
-| 13 | Confidence scoring (0-1) | Enterprise | model.py |
-| 14 | Concept drift detection | Enterprise | drift_detector.py |
-| 15 | Model retraining + versioning | Enterprise | retraining.py |
-| 16 | API authentication | Enterprise | auth.py |
-| 17 | Structured logging | Enterprise | logging_config.py |
-| 18 | Performance monitoring | Enterprise | performance_monitor.py |
-| 19 | Model metadata endpoint | Enterprise | model.py |
-| 20 | Graceful degradation | Enterprise | risk_engine.py |
-| 21 | Per-server sensitivity | Enterprise | database.py |
-| 22 | Automated remediation | Enterprise | remediation.py |
+| # | Feature | Module |
+|---|---------|--------|
+| 1 | Real-time psutil monitoring (1s interval) | main.py |
+| 2 | Accurate rate calculations (disk I/O MB/s, network KB/s) | main.py, train_model.py |
+| 3 | Real process count monitoring | main.py |
+| 4 | 30-feature engineering | feature_engineering.py |
+| 5 | Isolation Forest anomaly detection | model.py |
+| 6 | SHAP explainability | model.py |
+| 7 | Health score (0-100) | risk_engine.py |
+| 8 | Risk levels (GREEN/YELLOW/RED) | risk_engine.py |
+| 9 | Failure probability (0-100%) | failure_predictor.py |
+| 10 | Health trend forecast | main.py |
+| 11 | Root cause hints | risk_engine.py |
+| 12 | Confidence scoring (0-1) | model.py |
+| 13 | Concept drift detection | drift_detector.py |
+| 14 | Model retraining + versioning | retraining.py |
+| 15 | CAPTCHA dashboard gate | captcha.py |
+| 16 | API authentication | auth.py |
+| 17 | Structured logging | logging_config.py |
+| 18 | Graceful degradation | risk_engine.py |
 
 ---
 
-## 20. HOW TO RUN
+## 19. HOW TO RUN
 
 ```bash
 # Install
 pip install -r requirements.txt
-pip install psutil shap
 
 # Train (60 seconds of real data collection)
 python -m backend.train_model
@@ -469,26 +462,25 @@ python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
 
 ---
 
-## 21. VERIFICATION RESULTS
+## 20. VERIFICATION RESULTS
 
 ### Normal Operation
 ```
 Health: 90, Risk: GREEN, Confidence: 0.05, Failure: 0%
 Model: active, Drift: false, Anomaly rate: 3%
-Performance: 36ms avg latency, 276MB memory
+Metrics: CPU 20%, Memory 80%, Disk 0.4 MB/s, Processes 341, Network 1.3 KB/s
 ```
 
-### Under Failure Injection
+### Under Stress
 ```
-Health: 42, Risk: RED, Confidence: 0.85, Failure: 100%
-Drift: anomaly rate jumped to 10%
+Health: 30, Risk: RED, Confidence: 0.79, Failure: 100%
+Root cause: High Memory (88%) — Possible memory leak or cache bloat
 Alert: CRITICAL — Risk escalated to RED
 ```
 
 ### Structured Logging
 ```
-2026-02-24 22:59:55 | INFO  | main  | Engine started
-2026-02-24 23:00:03 | INFO  | model | Model loaded in 0.028s
-2026-02-24 23:11:18 | WARN  | main  | ALERT [CRITICAL]: Risk escalated to RED
-2026-02-24 23:15:11 | INFO  | main  | Sensitivity changed to 8 for server local
+2026-03-07 20:59:03 | INFO  | main  | Engine started
+2026-03-07 20:59:04 | INFO  | model | Model loaded in 0.028s
+2026-03-07 20:59:42 | WARN  | main  | ALERT [CRITICAL]: Risk escalated to RED
 ```

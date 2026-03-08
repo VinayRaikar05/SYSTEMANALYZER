@@ -17,7 +17,7 @@ from __future__ import annotations
 import numpy as np
 
 
-SIGNALS = ["cpu", "memory", "disk_io", "response_time", "network"]
+SIGNALS = ["cpu", "memory", "disk_io", "process_count", "network"]
 WINDOW = 5          # points for rolling stats
 
 

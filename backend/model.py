@@ -1,6 +1,6 @@
 """
-ML Model Loader, Predictor & Explainer — Enterprise Edition
--------------------------------------------------------------
+ML Model Loader, Predictor & Explainer
+-----------------------------------------
 • predict()         → anomaly score + flag + confidence (0-1)
 • explain()         → SHAP feature contributions
 • get_model_info()  → model metadata
@@ -21,7 +21,7 @@ logger = get_logger("model")
 
 MODEL_PATH = Path(__file__).resolve().parent.parent / "models" / "isolation_model.pkl"
 
-SIGNALS = ["cpu", "memory", "disk_io", "response_time", "network"]
+SIGNALS = ["cpu", "memory", "disk_io", "process_count", "network"]
 FEATURE_SUFFIXES = ["latest", "rolling_mean", "rolling_var", "trend_slope", "spike_mag", "rate_of_change"]
 FEATURE_NAMES = [f"{sig}_{suf}" for sig in SIGNALS for suf in FEATURE_SUFFIXES]
 

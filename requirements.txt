@@ -6,3 +6,5 @@ numpy>=1.26.0
 joblib>=1.4.0
 aiosqlite>=0.20.0
 sqlalchemy[asyncio]>=2.0.30
+psutil
+shap

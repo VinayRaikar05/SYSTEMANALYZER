@@ -1,6 +1,6 @@
 # ⚡ AI-Based System Failure Early Warning Engine
 
-An enterprise-grade AI observability platform that monitors real-time system metrics, detects anomalies using Isolation Forest, predicts failures, explains decisions with SHAP, and self-adapts through drift detection and automated retraining.
+An AI-powered system monitoring platform that collects real-time system metrics, detects anomalies using Isolation Forest, predicts failures, explains decisions with SHAP, and self-adapts through drift detection and automated retraining.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-green?logo=fastapi)
@@ -14,7 +14,7 @@ An enterprise-grade AI observability platform that monitors real-time system met
 ### Core AI Engine
 | Capability | Description |
 |---|---|
-| **Real-Time Monitoring** | Collects CPU, Memory, Disk I/O, Network via `psutil` every 2 seconds |
+| **Real-Time Monitoring** | Collects CPU, Memory, Disk I/O, Process Count, Network via `psutil` every 1 second |
 | **Anomaly Detection** | Isolation Forest (200 trees) trained on your machine's real data |
 | **Failure Prediction** | Logistic Regression predicts crash probability (0–100%) |
 | **SHAP Explainability** | Shows *which features* caused the anomaly score |
@@ -22,25 +22,23 @@ An enterprise-grade AI observability platform that monitors real-time system met
 | **Health Forecasting** | Linear regression projects health 2 minutes ahead |
 | **Root Cause Hints** | Auto-suggests "Check compute-heavy process", "Possible memory leak", etc. |
 
-### Enterprise Features
+### Additional Features
 | Capability | Description |
 |---|---|
+| **CAPTCHA Gate** | Math-based CAPTCHA required before accessing the dashboard (24h session) |
 | **Model Retraining** | Retrain from recent DB data with versioning, keeps last 2 models |
 | **Drift Detection** | Rolling anomaly rate tracker flags concept drift |
 | **API Authentication** | X-API-KEY header protection on sensitive endpoints |
 | **Structured Logging** | Rotating file handler → `logs/system.log` |
-| **Performance Metrics** | Inference latency, req/min, memory usage tracking |
 | **Graceful Degradation** | Rule-based fallback if ML model is unavailable |
-| **Per-Server Sensitivity** | Stored per server_id in database |
-| **Automated Remediation** | Simulated service restart, scaling, cleanup hooks |
-| **Multi-Server Ready** | `server_id` field across all tables and endpoints |
 
 ---
 
 ## 🏗 Architecture
 
 ```
-psutil (Real Metrics) → Feature Engineering (30 features)
+psutil (Real Metrics: CPU, Memory, Disk I/O, Process Count, Network)
+    → Feature Engineering (30 features)
     → Isolation Forest (Anomaly Score + Confidence)
     → Logistic Regression (Failure Probability)
     → SHAP (Explainability)
@@ -84,8 +82,8 @@ python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
 
 ```
 ├── backend/
-│   ├── main.py                 # FastAPI server + 18 endpoints
-│   ├── database.py             # SQLite ORM (4 tables incl. ServerConfig)
+│   ├── main.py                 # FastAPI server + 13 endpoints + pipeline
+│   ├── database.py             # SQLite ORM (3 tables)
 │   ├── feature_engineering.py  # Raw metrics → 30 ML features
 │   ├── model.py                # Isolation Forest + SHAP + confidence
 │   ├── risk_engine.py          # Health score + risk + root cause + fallback
@@ -93,48 +91,44 @@ python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
 │   ├── train_model.py          # Train on real psutil data
 │   ├── drift_detector.py       # Concept drift detection (200-window)
 │   ├── retraining.py           # Model retraining with versioning
+│   ├── captcha.py              # Math CAPTCHA generation + verification
 │   ├── auth.py                 # API key authentication
-│   ├── logging_config.py       # Structured logging (rotating file)
-│   ├── performance_monitor.py  # Inference latency + request tracking
-│   └── remediation.py          # Automated remediation hooks
+│   └── logging_config.py       # Structured logging (rotating file)
 ├── frontend/
-│   ├── dashboard.html          # Enterprise monitoring dashboard
-│   └── script.js               # Chart.js + live polling + enterprise UI
+│   ├── dashboard.html          # Real-time monitoring dashboard
+│   ├── captcha.html            # CAPTCHA verification page
+│   └── script.js               # Chart.js + live polling (1s interval)
 ├── models/                     # Trained ML models (.pkl) + backups
 ├── logs/                       # Structured log files (auto-created)
 ├── requirements.txt
-└── PROJECT_GUIDE.md            # Full code walkthrough (1000+ lines)
+└── PROJECT_GUIDE.md            # Full code walkthrough
 ```
 
 ---
 
-## 🔌 API Endpoints (18 Total)
+## 🔌 API Endpoints (13 Total)
 
 ### Public Endpoints
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/` | Dashboard |
+| `GET` | `/` | Dashboard (requires CAPTCHA session) |
+| `GET` | `/captcha` | CAPTCHA verification page |
+| `GET` | `/captcha/generate` | Generate a new CAPTCHA challenge |
+| `POST` | `/captcha/verify` | Verify CAPTCHA answer, returns session token |
 | `GET` | `/health` | Health, risk, failure prob, confidence, model status |
-| `GET` | `/metrics/recent` | Recent raw metrics |
+| `GET` | `/metrics/recent` | Recent raw metrics (CPU, Memory, Disk I/O, Process Count, Network) |
 | `GET` | `/health/history` | Health score time series |
 | `GET` | `/health/forecast` | 60-point future projection |
 | `GET` | `/explain` | SHAP feature contributions |
-| `GET` | `/servers` | Monitored server IDs |
-| `GET` | `/settings` | Per-server sensitivity |
+| `GET` | `/alerts` | Alert log |
 | `GET` | `/model/drift-status` | Drift detection status |
 
 ### Protected Endpoints (require X-API-KEY when auth enabled)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `POST` | `/ingest-metrics` | Manual metric submission |
-| `POST` | `/settings/sensitivity` | Adjust per-server sensitivity (1–10) |
-| `POST` | `/simulate/failure` | Inject failure spikes for demo |
-| `POST` | `/simulate/stop` | Stop injection |
 | `POST` | `/model/retrain` | Trigger model retraining |
-| `POST` | `/remediation/trigger` | Trigger remediation actions |
 | `GET` | `/model/info` | Model metadata + version |
-| `GET` | `/system/performance` | Inference latency, memory, req/min |
-| `GET` | `/alerts` | Alert log |
 
 ---
 
@@ -142,6 +136,7 @@ python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
 
 ### Isolation Forest (Anomaly Detection)
 - **Type:** Unsupervised, 200 trees, contamination=0.02
+- **Signals:** CPU, Memory, Disk I/O, Process Count, Network
 - **Features:** 30 (6 per signal: latest, rolling mean, variance, trend slope, spike, rate of change)
 - **Output:** Anomaly score + flag + normalized confidence (0–1)
 
@@ -155,13 +150,16 @@ python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
 
 ---
 
-## 🛡 Enterprise Features Detail
+## 🛡 Feature Details
+
+### CAPTCHA Verification
+A math-based CAPTCHA (addition, subtraction, or multiplication) gates access to the dashboard. No external APIs required — entirely self-contained. On correct answer, a session cookie is set for 24 hours. CAPTCHAs expire after 5 minutes if unsolved.
 
 ### Concept Drift Detection
 Tracks rolling anomaly rate over 200 predictions. If rate exceeds `contamination × 3` (6%) for 2+ minutes, drift is flagged and model retraining is recommended.
 
 ### Graceful Degradation
-If the model file is missing or prediction fails, the system falls back to rule-based detection using metric thresholds (CPU>90, Memory>88, etc.). Returns `model_status: "fallback_mode"`.
+If the model file is missing or prediction fails, the system falls back to rule-based detection using metric thresholds (CPU>90, Memory>88, Process Count>400, etc.). Returns `model_status: "fallback_mode"`.
 
 ### API Authentication
 Set `API_KEYS` environment variable (comma-separated). All POST and sensitive GET endpoints require `X-API-KEY` header. No keys configured = dev mode (auth disabled).
@@ -169,11 +167,16 @@ Set `API_KEYS` environment variable (comma-separated). All POST and sensitive GE
 ### Structured Logging
 All events logged to `logs/system.log` with rotating file handler (5MB max, 3 backups). Levels: INFO, WARNING, ERROR.
 
+### Accurate Metric Collection
+- **Disk I/O & Network rates** use precise elapsed-time calculations (`time.monotonic()`) for true MB/s and KB/s values
+- **Process Count** is a real system metric from `psutil.pids()` — not a synthetic value
+- **1-second polling interval** for responsive real-time monitoring
+
 ---
 
 ## 📖 Documentation
 
-See **[PROJECT_GUIDE.md](PROJECT_GUIDE.md)** for a comprehensive 1000+ line walkthrough covering every file, function, algorithm, and design decision.
+See **[PROJECT_GUIDE.md](PROJECT_GUIDE.md)** for a comprehensive walkthrough covering every file, function, algorithm, and design decision.
 
 ---
 

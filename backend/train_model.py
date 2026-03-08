@@ -1,6 +1,6 @@
 """
-Train Model Script v2
----------------------
+Train Model Script
+-------------------
 1. Collects real system metrics via psutil for ~60s
 2. Augments to 3000 normal samples
 3. Trains Isolation Forest → isolation_model.pkl
@@ -38,30 +38,38 @@ def _collect_real_baseline() -> list[dict]:
     rows: list[dict] = []
     prev_disk = psutil.disk_io_counters()
     prev_net = psutil.net_io_counters()
+    prev_time = time.monotonic()
     psutil.cpu_percent(interval=None)
 
     end_time = time.time() + COLLECT_SECONDS
     while time.time() < end_time:
         time.sleep(SAMPLE_INTERVAL)
+        now_mono = time.monotonic()
+        elapsed = now_mono - prev_time
+        if elapsed <= 0:
+            elapsed = SAMPLE_INTERVAL
+
         cpu = psutil.cpu_percent(interval=None)
         memory = psutil.virtual_memory().percent
 
         disk_now = psutil.disk_io_counters()
         disk_delta = (disk_now.read_bytes + disk_now.write_bytes) - \
                      (prev_disk.read_bytes + prev_disk.write_bytes)
-        disk_io = disk_delta / (1024 * 1024 * SAMPLE_INTERVAL)
+        disk_io = disk_delta / (1024 * 1024 * elapsed)
         prev_disk = disk_now
 
         net_now = psutil.net_io_counters()
         net_delta = (net_now.bytes_sent + net_now.bytes_recv) - \
                     (prev_net.bytes_sent + prev_net.bytes_recv)
-        network = net_delta / (1024 * SAMPLE_INTERVAL)
+        network = net_delta / (1024 * elapsed)
         prev_net = net_now
 
-        response_time = 50 + cpu * 1.5 + disk_io * 5
+        prev_time = now_mono
+
+        process_count = len(psutil.pids())
         rows.append({
             "cpu": round(cpu, 2), "memory": round(memory, 2),
-            "disk_io": round(disk_io, 2), "response_time": round(response_time, 2),
+            "disk_io": round(disk_io, 2), "process_count": round(process_count, 2),
             "network": round(network, 2),
         })
 
@@ -75,11 +83,11 @@ def _augment(rows: list[dict], target: int = 3000) -> list[dict]:
     while len(augmented) < target:
         base = rows[RNG.integers(0, n)]
         augmented.append({
-            "cpu":           float(np.clip(base["cpu"] + RNG.normal(0, 8), 0, 100)),
-            "memory":        float(np.clip(base["memory"] + RNG.normal(0, 5), 0, 100)),
-            "disk_io":       float(np.clip(base["disk_io"] + RNG.normal(0, base["disk_io"] * 0.5 + 1), 0, 200)),
-            "response_time": float(np.clip(base["response_time"] + RNG.normal(0, 20), 10, 500)),
-            "network":       float(np.clip(base["network"] + RNG.normal(0, base["network"] * 0.5 + 5), 0, 500)),
+            "cpu":            float(np.clip(base["cpu"] + RNG.normal(0, 8), 0, 100)),
+            "memory":         float(np.clip(base["memory"] + RNG.normal(0, 5), 0, 100)),
+            "disk_io":        float(np.clip(base["disk_io"] + RNG.normal(0, base["disk_io"] * 0.5 + 1), 0, 200)),
+            "process_count":  float(np.clip(base["process_count"] + RNG.normal(0, 30), 10, 1000)),
+            "network":        float(np.clip(base["network"] + RNG.normal(0, base["network"] * 0.5 + 5), 0, 500)),
         })
     return augmented
 
@@ -103,7 +111,6 @@ def _train_failure_model(baseline: list[dict]) -> None:
 
     # Normal scenarios (label=0)
     for _ in range(500):
-        n_pts = RNG.integers(5, 11)
         # Normal: low anomaly freq, stable health, normal CPU/Memory
         anomaly_freq = float(RNG.uniform(0, 0.2))
         health_slope = float(RNG.uniform(-1, 1))

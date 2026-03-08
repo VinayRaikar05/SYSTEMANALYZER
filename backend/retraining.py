@@ -58,7 +58,6 @@ def _version_existing_models() -> None:
 
 
 def retrain_isolation_forest(
-    server_id: str = "local",
     min_samples: int = 200,
 ) -> dict:
     """
@@ -67,13 +66,13 @@ def retrain_isolation_forest(
     """
     global _last_retrained, _model_version, _training_sample_count
 
-    logger.info(f"Retraining started for server_id={server_id}")
+    logger.info("Retraining started")
     start = time.time()
 
     db = get_db()
     try:
         # Fetch recent metrics
-        recent = get_recent_metrics(db, limit=2000, server_id=server_id)
+        recent = get_recent_metrics(db, limit=2000)
         if len(recent) < min_samples:
             msg = f"Not enough data: {len(recent)} rows (need {min_samples})"
             logger.warning(msg)
@@ -81,7 +80,7 @@ def retrain_isolation_forest(
 
         rows = [
             {"cpu": r.cpu, "memory": r.memory, "disk_io": r.disk_io,
-             "response_time": r.response_time, "network": r.network}
+             "process_count": r.process_count, "network": r.network}
             for r in reversed(recent)
         ]
     finally:
@@ -96,7 +95,7 @@ def retrain_isolation_forest(
             "cpu": float(np.clip(base["cpu"] + rng.normal(0, 8), 0, 100)),
             "memory": float(np.clip(base["memory"] + rng.normal(0, 5), 0, 100)),
             "disk_io": float(np.clip(base["disk_io"] + rng.normal(0, max(1, base["disk_io"] * 0.5)), 0, 200)),
-            "response_time": float(np.clip(base["response_time"] + rng.normal(0, 20), 10, 500)),
+            "process_count": float(np.clip(base["process_count"] + rng.normal(0, 30), 10, 1000)),
             "network": float(np.clip(base["network"] + rng.normal(0, max(5, base["network"] * 0.5)), 0, 500)),
         })
 

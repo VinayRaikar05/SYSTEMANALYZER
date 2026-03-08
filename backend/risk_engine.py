@@ -1,7 +1,7 @@
 """
-Risk Engine — Enterprise Edition
-----------------------------------
-• compute_health_score    – anomaly score → health (0–100) with severity penalty + sensitivity
+Risk Engine
+------------
+• compute_health_score    – anomaly score → health (0–100) with severity penalty
 • compute_metric_severity – raw metric penalty for sustained high load
 • evaluate_risk           – anomaly frequency → GREEN/YELLOW/RED
 • should_alert            – detect risk escalation
@@ -22,7 +22,7 @@ def compute_metric_severity(metrics: dict) -> int:
     cpu = metrics.get("cpu", 0)
     mem = metrics.get("memory", 0)
     disk = metrics.get("disk_io", 0)
-    resp = metrics.get("response_time", 0)
+    procs = metrics.get("process_count", 0)
 
     if cpu > 90:    penalty += 12
     elif cpu > 80:  penalty += 7
@@ -35,8 +35,9 @@ def compute_metric_severity(metrics: dict) -> int:
     if disk > 80:   penalty += 8
     elif disk > 50: penalty += 4
 
-    if resp > 250:   penalty += 10
-    elif resp > 180: penalty += 5
+    if procs > 400:   penalty += 10
+    elif procs > 300:  penalty += 5
+    elif procs > 250:  penalty += 2
 
     return min(40, penalty)
 
@@ -91,7 +92,7 @@ def diagnose_root_cause(metrics: dict) -> str:
     cpu = metrics.get("cpu", 0)
     mem = metrics.get("memory", 0)
     disk = metrics.get("disk_io", 0)
-    resp = metrics.get("response_time", 0)
+    procs = metrics.get("process_count", 0)
     net = metrics.get("network", 0)
 
     if cpu > 75:
@@ -100,8 +101,8 @@ def diagnose_root_cause(metrics: dict) -> str:
         issues.append((mem, f"High Memory ({mem:.0f}%) — Possible memory leak or cache bloat"))
     if disk > 50:
         issues.append((disk, f"Heavy Disk I/O ({disk:.1f} MB/s) — Large file operations or swap activity"))
-    if resp > 200:
-        issues.append((resp / 5, f"Slow Response ({resp:.0f}ms) — Backend congestion"))
+    if procs > 300:
+        issues.append((procs / 5, f"High Process Count ({procs:.0f}) — Too many processes running"))
     if net > 200:
         issues.append((net / 10, f"High Network ({net:.0f} KB/s) — Heavy data transfer"))
 

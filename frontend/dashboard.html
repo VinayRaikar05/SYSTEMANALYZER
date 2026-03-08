@@ -67,44 +67,6 @@
             flex-wrap: wrap;
         }
 
-        .top-bar select,
-        .top-bar button {
-            font-size: 0.8rem;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: var(--bg-card);
-            color: var(--text-primary);
-            padding: 6px 14px;
-        }
-
-        .top-bar button:hover {
-            background: var(--accent-cyan);
-            color: #000;
-        }
-
-        .btn-danger-glow {
-            background: var(--accent-red) !important;
-            color: #fff !important;
-            border-color: var(--accent-red) !important;
-        }
-
-        .btn-danger-glow:hover {
-            box-shadow: var(--glow-red);
-        }
-
-        .sensitivity-wrap {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .sensitivity-wrap input[type=range] {
-            width: 100px;
-            accent-color: var(--accent-cyan);
-        }
-
         .live-dot {
             width: 8px;
             height: 8px;
@@ -167,6 +129,10 @@
 
         .card-metric .value.purple {
             color: var(--accent-purple);
+        }
+
+        .card-metric .value.blue {
+            color: var(--accent-blue);
         }
 
         .gauge-card {
@@ -309,34 +275,6 @@
             transition: left 0.5s;
         }
 
-        .enterprise-bar {
-            background: var(--bg-card);
-            border-radius: 14px;
-            padding: 12px 18px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .enterprise-bar .stat {
-            text-align: center;
-        }
-
-        .enterprise-bar .stat .label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-secondary);
-        }
-
-        .enterprise-bar .stat .val {
-            font-size: 0.95rem;
-            font-weight: 700;
-        }
-
         .status-pill {
             display: inline-flex;
             align-items: center;
@@ -362,18 +300,6 @@
             color: var(--accent-red);
             animation: pulse 1.5s infinite;
         }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.5;
-            }
-        }
     </style>
 </head>
 
@@ -383,18 +309,9 @@
     <div class="top-bar">
         <h1>⚡ <span>System Failure Early Warning Engine</span></h1>
         <div class="controls">
-            <select id="serverSelect" title="Select Server">
-                <option value="local">📍 Local Server</option>
-            </select>
-            <div class="sensitivity-wrap">
-                <label for="sensitivitySlider">Sensitivity</label>
-                <input type="range" id="sensitivitySlider" min="1" max="10" value="5" />
-                <span id="sensitivityValue">5</span>
-            </div>
-            <button id="injectBtn" class="btn-danger-glow" onclick="injectFailure()">💥 Inject Failure</button>
             <span class="status-pill active" id="modelStatusPill">● ML Active</span>
             <span class="status-pill" id="driftPill" style="display:none">⚠ Drift</span>
-            <span><span class="live-dot"></span> Real-time</span>
+            <span><span class="live-dot"></span> Real-time (1s)</span>
         </div>
     </div>
 
@@ -422,8 +339,8 @@
             </div>
             <div class="col-6 col-md-3 col-lg">
                 <div class="card-metric">
-                    <div class="label">Response Time</div>
-                    <div class="value amber" id="kpiResp">—</div>
+                    <div class="label">Processes</div>
+                    <div class="value blue" id="kpiProcs">—</div>
                 </div>
             </div>
             <div class="col-6 col-md-3 col-lg">
@@ -509,8 +426,8 @@
             </div>
             <div class="col-md-6">
                 <div class="card-metric">
-                    <div class="label">📊 Disk I/O & Response Time</div>
-                    <div class="chart-wrap"><canvas id="diskRespChart"></canvas></div>
+                    <div class="label">📊 Disk I/O & Processes</div>
+                    <div class="chart-wrap"><canvas id="diskProcsChart"></canvas></div>
                 </div>
             </div>
         </div>
@@ -542,50 +459,9 @@
             </div>
         </div>
 
-        <!-- ─── ROW 6: ENTERPRISE STATUS BAR ──────────────────────── -->
-        <div class="row g-3 mb-3">
-            <div class="col-12">
-                <div class="enterprise-bar">
-                    <div class="stat">
-                        <div class="label">Model Status</div>
-                        <div class="val" id="entModelStatus">—</div>
-                    </div>
-                    <div class="stat">
-                        <div class="label">Model Version</div>
-                        <div class="val" id="entModelVer">—</div>
-                    </div>
-                    <div class="stat">
-                        <div class="label">Drift Status</div>
-                        <div class="val" id="entDriftStatus">—</div>
-                    </div>
-                    <div class="stat">
-                        <div class="label">Anomaly Rate</div>
-                        <div class="val" id="entAnomalyRate">—</div>
-                    </div>
-                    <div class="stat">
-                        <div class="label">Avg Latency</div>
-                        <div class="val" id="entLatency">—</div>
-                    </div>
-                    <div class="stat">
-                        <div class="label">Req/min</div>
-                        <div class="val" id="entReqMin">—</div>
-                    </div>
-                    <div class="stat">
-                        <div class="label">App Memory</div>
-                        <div class="val" id="entMemory">—</div>
-                    </div>
-                    <div class="stat">
-                        <button class="btn btn-sm"
-                            style="background:rgba(0,229,255,0.15);color:var(--accent-cyan);border:none;font-weight:600;"
-                            onclick="retrainModel()">🔄 Retrain</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    <script src="/static/script.js"></script>
+    <script src="/static/script.js?v=4"></script>
 </body>
 
 </html>

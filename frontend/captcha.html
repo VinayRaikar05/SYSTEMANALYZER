@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Verify Access — System Failure Early Warning Engine</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <style>
+        :root {
+            --bg-primary: #0f1123;
+            --bg-card: #161830;
+            --accent-cyan: #00e5ff;
+            --accent-green: #00e676;
+            --accent-red: #ff1744;
+            --accent-amber: #ffab00;
+            --text-primary: #e8eaed;
+            --text-secondary: #9aa0b2;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .bg-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-particles .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .bg-particles .orb:nth-child(1) {
+            width: 400px;
+            height: 400px;
+            background: var(--accent-cyan);
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .bg-particles .orb:nth-child(2) {
+            width: 300px;
+            height: 300px;
+            background: #b388ff;
+            bottom: -50px;
+            right: -50px;
+            animation-delay: 2s;
+        }
+
+        .bg-particles .orb:nth-child(3) {
+            width: 200px;
+            height: 200px;
+            background: var(--accent-green);
+            top: 50%;
+            left: 60%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+            }
+
+            50% {
+                transform: translateY(-30px) scale(1.05);
+            }
+        }
+
+        .captcha-card {
+            position: relative;
+            z-index: 1;
+            background: rgba(22, 24, 48, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 40px 36px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .captcha-card .logo {
+            font-size: 2.4rem;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .captcha-card h2 {
+            text-align: center;
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--accent-cyan);
+        }
+
+        .captcha-card .subtitle {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+
+        .captcha-question {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .captcha-question .label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .captcha-question .math {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: 4px;
+        }
+
+        .captcha-input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+            letter-spacing: 3px;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            margin-bottom: 16px;
+        }
+
+        .captcha-input:focus {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.15);
+        }
+
+        .captcha-input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+
+        .btn-verify {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, var(--accent-cyan), #448aff);
+            color: #000;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-verify:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 229, 255, 0.3);
+        }
+
+        .btn-verify:active {
+            transform: translateY(0);
+        }
+
+        .btn-verify:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-refresh {
+            display: block;
+            margin: 14px auto 0;
+            padding: 8px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.3s, border-color 0.3s;
+        }
+
+        .btn-refresh:hover {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+        }
+
+        .error-msg {
+            text-align: center;
+            color: var(--accent-red);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 12px;
+            min-height: 20px;
+            transition: opacity 0.3s;
+        }
+
+        .success-msg {
+            text-align: center;
+            color: var(--accent-green);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-8px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(8px);
+            }
+        }
+
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-particles">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <div class="captcha-card" id="captchaCard">
+        <div class="logo">⚡</div>
+        <h2>System Failure Early Warning Engine</h2>
+        <p class="subtitle">Solve the challenge below to access the monitoring dashboard</p>
+
+        <div class="captcha-question">
+            <div class="label">Solve this</div>
+            <div class="math" id="captchaMath">Loading...</div>
+        </div>
+
+        <input type="text" class="captcha-input" id="captchaAnswer" placeholder="Your answer" autocomplete="off"
+            maxlength="5" inputmode="numeric" />
+
+        <button class="btn-verify" id="verifyBtn" onclick="verifyCaptcha()">Verify & Enter Dashboard</button>
+
+        <button class="btn-refresh" onclick="loadCaptcha()">🔄 New challenge</button>
+
+        <div class="error-msg" id="errorMsg"></div>
+    </div>
+
+    <script>
+        let captchaToken = '';
+
+        async function loadCaptcha() {
+            try {
+                const res = await fetch('/captcha/generate');
+                const data = await res.json();
+                captchaToken = data.token;
+                document.getElementById('captchaMath').textContent = data.question.replace(' = ?', '');
+                document.getElementById('captchaAnswer').value = '';
+                document.getElementById('errorMsg').textContent = '';
+                document.getElementById('captchaAnswer').focus();
+            } catch (e) {
+                document.getElementById('captchaMath').textContent = 'Error loading';
+            }
+        }
+
+        async function verifyCaptcha() {
+            const answer = document.getElementById('captchaAnswer').value.trim();
+            if (!answer) {
+                showError('Please enter your answer');
+                return;
+            }
+
+            const btn = document.getElementById('verifyBtn');
+            btn.disabled = true;
+            btn.textContent = 'Verifying...';
+
+            try {
+                const res = await fetch('/captcha/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: captchaToken, answer: answer })
+                });
+                const data = await res.json();
+
+                if (data.verified) {
+                    document.getElementById('errorMsg').className = 'success-msg';
+                    document.getElementById('errorMsg').textContent = '✓ Verified! Redirecting...';
+                    btn.textContent = '✓ Verified';
+
+                    // Store session and redirect
+                    document.cookie = `captcha_session=${data.session};path=/;max-age=86400;SameSite=Strict`;
+                    setTimeout(() => { window.location.href = '/'; }, 600);
+                } else {
+                    showError('Incorrect answer — try again');
+                    btn.disabled = false;
+                    btn.textContent = 'Verify & Enter Dashboard';
+                    loadCaptcha();
+                }
+            } catch (e) {
+                showError('Verification failed — try again');
+                btn.disabled = false;
+                btn.textContent = 'Verify & Enter Dashboard';
+            }
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.className = 'error-msg';
+            el.textContent = msg;
+            document.getElementById('captchaCard').classList.add('shake');
+            setTimeout(() => document.getElementById('captchaCard').classList.remove('shake'), 400);
+        }
+
+        // Enter key to submit
+        document.getElementById('captchaAnswer').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') verifyCaptcha();
+        });
+
+        loadCaptcha();
+    </script>
+</body>
+
+</html>

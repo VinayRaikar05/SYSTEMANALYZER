@@ -1,64 +1,9 @@
 /* ──────────────────────────────────────────────────────────────
-   System Failure Early Warning Engine – Enterprise Dashboard
-   Original 7 upgrades + 10 enterprise features
+   System Failure Early Warning Engine – Dashboard
    ────────────────────────────────────────────────────────────── */
 
 const API = '';
-const POLL_MS = 2000;
-
-// ── Server selector ─────────────────────────────────────────
-function getServerId() {
-    return document.getElementById('serverSelect').value;
-}
-
-// ── Sensitivity slider ──────────────────────────────────────
-const slider = document.getElementById('sensitivitySlider');
-const sensVal = document.getElementById('sensitivityValue');
-slider.addEventListener('input', () => { sensVal.textContent = slider.value; });
-slider.addEventListener('change', async () => {
-    const sid = getServerId();
-    await fetch(`${API}/settings/sensitivity?value=${slider.value}&server_id=${sid}`, { method: 'POST' });
-});
-
-// ── Inject failure button ───────────────────────────────────
-let injecting = false;
-async function injectFailure() {
-    const btn = document.getElementById('injectBtn');
-    if (!injecting) {
-        await fetch(`${API}/simulate/failure?count=15`, { method: 'POST' });
-        btn.textContent = '⏹ Stop Injection';
-        btn.classList.remove('btn-danger-glow');
-        btn.style.background = '#ff1744';
-        injecting = true;
-    } else {
-        await fetch(`${API}/simulate/stop`, { method: 'POST' });
-        btn.textContent = '💥 Inject Failure';
-        btn.classList.add('btn-danger-glow');
-        btn.style.background = '';
-        injecting = false;
-    }
-}
-
-// ── Retrain model button ────────────────────────────────────
-async function retrainModel() {
-    const btn = event.target;
-    btn.textContent = '⏳ Training...';
-    btn.disabled = true;
-    try {
-        const res = await fetch(`${API}/model/retrain?server_id=${getServerId()}`, { method: 'POST' });
-        const data = await res.json();
-        if (data.status === 'success') {
-            btn.textContent = '✅ Done!';
-            setTimeout(() => { btn.textContent = '🔄 Retrain'; btn.disabled = false; }, 3000);
-        } else {
-            btn.textContent = '❌ Error';
-            setTimeout(() => { btn.textContent = '🔄 Retrain'; btn.disabled = false; }, 3000);
-        }
-    } catch (e) {
-        btn.textContent = '🔄 Retrain';
-        btn.disabled = false;
-    }
-}
+const POLL_MS = 1000;
 
 // ── Charts ──────────────────────────────────────────────────
 const chartOpts = {
@@ -84,9 +29,9 @@ const cpuMemChart = makeChart('cpuMemChart', [
     { label: 'Memory %', data: [], borderColor: '#b388ff', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 0 },
 ]);
 
-const diskRespChart = makeChart('diskRespChart', [
-    { label: 'Disk I/O', data: [], borderColor: '#448aff', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 0 },
-    { label: 'Response Time ms', data: [], borderColor: '#ffab00', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 0 },
+const diskProcsChart = makeChart('diskProcsChart', [
+    { label: 'Disk I/O MB/s', data: [], borderColor: '#448aff', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 0 },
+    { label: 'Processes', data: [], borderColor: '#ffab00', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 0 },
 ]);
 
 const netChart = makeChart('netChart', [
@@ -146,8 +91,7 @@ function drawGauge(canvas, value) {
 // ── Polling functions ───────────────────────────────────────
 async function pollHealth() {
     try {
-        const sid = getServerId();
-        const res = await fetch(`${API}/health?server_id=${sid}`);
+        const res = await fetch(`${API}/health`);
         const d = await res.json();
 
         document.getElementById('healthValue').textContent = d.health_score;
@@ -190,8 +134,7 @@ async function pollHealth() {
 
 async function pollMetrics() {
     try {
-        const sid = getServerId();
-        const res = await fetch(`${API}/metrics/recent?limit=60&server_id=${sid}`);
+        const res = await fetch(`${API}/metrics/recent?limit=60`);
         const data = await res.json();
         if (!data.length) return;
 
@@ -202,7 +145,7 @@ async function pollMetrics() {
         document.getElementById('kpiCpu').textContent = latest.cpu.toFixed(1) + '%';
         document.getElementById('kpiMem').textContent = latest.memory.toFixed(1) + '%';
         document.getElementById('kpiDisk').textContent = latest.disk_io.toFixed(1) + ' MB/s';
-        document.getElementById('kpiResp').textContent = latest.response_time.toFixed(0) + ' ms';
+        document.getElementById('kpiProcs').textContent = Math.round(latest.process_count);
         document.getElementById('kpiNet').textContent = latest.network.toFixed(1) + ' KB/s';
 
         cpuMemChart.data.labels = labels;
@@ -210,10 +153,10 @@ async function pollMetrics() {
         cpuMemChart.data.datasets[1].data = rows.map(r => r.memory);
         cpuMemChart.update('none');
 
-        diskRespChart.data.labels = labels;
-        diskRespChart.data.datasets[0].data = rows.map(r => r.disk_io);
-        diskRespChart.data.datasets[1].data = rows.map(r => r.response_time);
-        diskRespChart.update('none');
+        diskProcsChart.data.labels = labels;
+        diskProcsChart.data.datasets[0].data = rows.map(r => r.disk_io);
+        diskProcsChart.data.datasets[1].data = rows.map(r => r.process_count);
+        diskProcsChart.update('none');
 
         netChart.data.labels = labels;
         netChart.data.datasets[0].data = rows.map(r => r.network);
@@ -223,8 +166,7 @@ async function pollMetrics() {
 
 async function pollHealthHistory() {
     try {
-        const sid = getServerId();
-        const res = await fetch(`${API}/health/history?limit=60&server_id=${sid}`);
+        const res = await fetch(`${API}/health/history?limit=60`);
         const data = await res.json();
         if (!data.length) return;
 
@@ -240,7 +182,7 @@ async function pollHealthHistory() {
         healthChart.data.datasets[0].data = rows.map(r => r.health_score);
 
         try {
-            const fRes = await fetch(`${API}/health/forecast?server_id=${sid}`);
+            const fRes = await fetch(`${API}/health/forecast`);
             const forecast = await fRes.json();
             if (forecast.forecast && forecast.forecast.length > 0) {
                 const forecastLabels = [...labels];
@@ -262,8 +204,7 @@ async function pollHealthHistory() {
 
 async function pollAlerts() {
     try {
-        const sid = getServerId();
-        const res = await fetch(`${API}/alerts?limit=30&server_id=${sid}`);
+        const res = await fetch(`${API}/alerts?limit=30`);
         const data = await res.json();
         const tbody = document.querySelector('#alertTable tbody');
         tbody.innerHTML = data.map(a => {
@@ -290,19 +231,6 @@ async function pollShap() {
     } catch (e) { console.error('pollShap', e); }
 }
 
-async function pollServers() {
-    try {
-        const res = await fetch(`${API}/servers`);
-        const data = await res.json();
-        const sel = document.getElementById('serverSelect');
-        const current = sel.value;
-        sel.innerHTML = (data.servers || ['local']).map(s =>
-            `<option value="${s}" ${s === current ? 'selected' : ''}>${s === 'local' ? '📍 Local Server' : '🖥 ' + s}</option>`
-        ).join('');
-    } catch (e) { /* optional */ }
-}
-
-// ── Enterprise polling ──────────────────────────────────────
 async function pollDrift() {
     try {
         const res = await fetch(`${API}/model/drift-status`);
@@ -316,45 +244,6 @@ async function pollDrift() {
         } else {
             pill.style.display = 'none';
         }
-
-        document.getElementById('entDriftStatus').textContent = d.drift_detected ? '⚠ DETECTED' : '✅ Normal';
-        document.getElementById('entDriftStatus').style.color = d.drift_detected ? '#ff1744' : '#00e676';
-        document.getElementById('entAnomalyRate').textContent = (d.anomaly_rate * 100).toFixed(1) + '%';
-        document.getElementById('entAnomalyRate').style.color = d.anomaly_rate > 0.06 ? '#ff1744' : '#00e676';
-    } catch (e) { /* optional */ }
-}
-
-async function pollEnterprise() {
-    try {
-        // Performance stats (may require API key — fails gracefully)
-        const perfRes = await fetch(`${API}/system/performance`);
-        if (perfRes.ok) {
-            const p = await perfRes.json();
-            document.getElementById('entLatency').textContent = p.avg_inference_latency_ms.toFixed(1) + ' ms';
-            document.getElementById('entReqMin').textContent = p.requests_per_minute;
-            document.getElementById('entMemory').textContent = p.app_memory_mb.toFixed(0) + ' MB';
-        }
-    } catch (e) { /* optional */ }
-
-    try {
-        // Model info (may require API key)
-        const infoRes = await fetch(`${API}/model/info`);
-        if (infoRes.ok) {
-            const m = await infoRes.json();
-            document.getElementById('entModelStatus').textContent = m.model_status === 'active' ? '✅ Active' : '⚠ Fallback';
-            document.getElementById('entModelStatus').style.color = m.model_status === 'active' ? '#00e676' : '#ffab00';
-            document.getElementById('entModelVer').textContent = m.model_version || 'v1.0';
-        }
-    } catch (e) { /* optional */ }
-}
-
-// ── Load per-server sensitivity ─────────────────────────────
-async function loadSensitivity() {
-    try {
-        const res = await fetch(`${API}/settings?server_id=${getServerId()}`);
-        const d = await res.json();
-        slider.value = d.sensitivity;
-        sensVal.textContent = d.sensitivity;
     } catch (e) { /* optional */ }
 }
 
@@ -363,16 +252,5 @@ async function pollAll() {
     await Promise.all([pollHealth(), pollMetrics(), pollHealthHistory(), pollAlerts(), pollShap(), pollDrift()]);
 }
 
-loadSensitivity();
-pollServers();
 pollAll();
-pollEnterprise();
 setInterval(pollAll, POLL_MS);
-setInterval(pollEnterprise, 10000);
-setInterval(pollServers, 15000);
-
-// Reload sensitivity when server changes
-document.getElementById('serverSelect').addEventListener('change', () => {
-    loadSensitivity();
-    pollAll();
-});
