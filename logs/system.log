@@ -1,24 +1,355 @@
-2026-02-24 22:59:55 | INFO     | main                      | System Failure Early Warning Engine started
-2026-02-24 23:00:03 | INFO     | model                     | Model loaded in 0.028s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
-2026-02-24 23:00:14 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (83%) — Possible memory leak or cache bloat (health=59, failure_prob=0.0%, confidence=0.56)
-2026-02-24 23:00:20 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (83%) — Possible memory leak or cache bloat (health=56, failure_prob=1.6%, confidence=0.59)
-2026-02-24 23:05:45 | INFO     | auth                      | API auth DISABLED (no API_KEYS env var set)
-2026-02-24 23:05:49 | INFO     | main                      | Sensitivity changed to 7 for server local
-2026-02-24 23:11:16 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (85%) — Possible memory leak or cache bloat (health=54, failure_prob=0.1%, confidence=0.92)
-2026-02-24 23:11:18 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Network (1011 KB/s) — Heavy data transfer (health=55, failure_prob=0.2%, confidence=0.90)
-2026-02-24 23:15:11 | INFO     | main                      | Sensitivity changed to 8 for server local
-2026-02-24 23:15:31 | INFO     | main                      | System Failure Early Warning Engine started
-2026-02-24 23:15:31 | INFO     | model                     | Model loaded in 0.034s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
-2026-02-24 23:15:33 | INFO     | main                      | Engine shut down
-2026-02-24 23:17:36 | WARNING  | main                      | Failure injection started: 10 spikes
-2026-02-24 23:17:40 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — Heavy Disk I/O (91.1 MB/s) — Large file operations or swap activity (health=2, failure_prob=92.9%, confidence=0.95)
-2026-02-24 23:17:42 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High CPU (97%) — Check compute-heavy processes (health=11, failure_prob=99.4%, confidence=0.92)
-2026-02-24 23:17:48 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
-2026-02-24 23:18:08 | INFO     | main                      | Sensitivity changed to 5 for server local
-2026-02-24 23:19:20 | INFO     | main                      | Manual retrain triggered for local
-2026-02-24 23:19:20 | INFO     | retraining                | Retraining started for server_id=local
-2026-02-24 23:19:23 | INFO     | retraining                | Backed up isolation_model.pkl → isolation_model.pkl.20260224_231923.bak
-2026-02-24 23:19:23 | INFO     | retraining                | Backed up failure_model.pkl → failure_model.pkl.20260224_231923.bak
-2026-02-24 23:19:24 | INFO     | retraining                | Retraining complete: version=v2.20260224_231924, samples=2995, time=3.5s
-2026-02-24 23:19:25 | INFO     | model                     | Model loaded in 0.122s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
-2026-02-24 23:19:47 | INFO     | main                      | Engine shut down
+2026-02-25 11:23:22 | INFO     | main                      | System Failure Early Warning Engine started
+2026-02-25 11:23:22 | INFO     | model                     | Model loaded in 0.029s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-02-25 11:24:08 | INFO     | main                      | System Failure Early Warning Engine started
+2026-02-25 11:24:08 | INFO     | model                     | Model loaded in 0.034s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-02-25 11:25:05 | INFO     | auth                      | API auth DISABLED (no API_KEYS env var set)
+2026-02-25 11:25:58 | INFO     | main                      | Engine shut down
+2026-02-25 13:29:00 | INFO     | main                      | System Failure Early Warning Engine started
+2026-02-25 13:29:00 | INFO     | model                     | Model loaded in 0.029s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-02-25 13:29:06 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (81%) — Possible memory leak or cache bloat (health=44, failure_prob=16.6%, confidence=0.71)
+2026-02-25 13:29:08 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (82%) — Possible memory leak or cache bloat (health=57, failure_prob=26.1%, confidence=0.58)
+2026-02-25 13:29:31 | INFO     | main                      | Engine shut down
+2026-02-25 13:29:48 | INFO     | main                      | System Failure Early Warning Engine started
+2026-02-25 13:29:48 | INFO     | model                     | Model loaded in 0.032s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-02-25 13:29:49 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (83%) — Possible memory leak or cache bloat (health=82, failure_prob=12.6%, confidence=0.34)
+2026-02-25 13:30:28 | INFO     | main                      | Engine shut down
+2026-02-25 13:31:13 | INFO     | main                      | System Failure Early Warning Engine started
+2026-02-25 13:31:13 | INFO     | model                     | Model loaded in 0.037s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-02-25 13:31:18 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (85%) — Possible memory leak or cache bloat (health=63, failure_prob=98.7%, confidence=0.52)
+2026-02-25 13:32:01 | INFO     | auth                      | API auth DISABLED (no API_KEYS env var set)
+2026-02-25 13:32:25 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (85%) — Possible memory leak or cache bloat (health=42, failure_prob=1.4%, confidence=0.72)
+2026-02-25 13:32:27 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Network (1051 KB/s) — Heavy data transfer (health=54, failure_prob=1.7%, confidence=0.67)
+2026-02-25 13:33:00 | INFO     | main                      | Manual retrain triggered for local
+2026-02-25 13:33:00 | INFO     | retraining                | Retraining started for server_id=local
+2026-02-25 13:33:01 | WARNING  | drift                     | Drift suspected: anomaly rate 18.00% > threshold 6.00%
+2026-02-25 13:33:02 | INFO     | retraining                | Backed up isolation_model.pkl → isolation_model.pkl.20260225_133302.bak
+2026-02-25 13:33:02 | INFO     | retraining                | Backed up failure_model.pkl → failure_model.pkl.20260225_133302.bak
+2026-02-25 13:33:03 | INFO     | retraining                | Retraining complete: version=v2.20260225_133303, samples=2995, time=3.4s
+2026-02-25 13:33:03 | INFO     | model                     | Model loaded in 0.141s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-02-25 13:33:24 | INFO     | main                      | Sensitivity changed to 1 for server local
+2026-02-25 13:33:43 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — Slow Response (685ms) — Backend congestion (health=33, failure_prob=54.0%, confidence=0.73)
+2026-02-25 13:33:47 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (84%) — Possible memory leak or cache bloat (health=56, failure_prob=70.2%, confidence=0.68)
+2026-02-25 14:33:54 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 17.57% sustained for 120s — model retraining recommended
+2026-02-25 14:58:20 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — Slow Response (1413ms) — Backend congestion (health=24, failure_prob=2.6%, confidence=0.80)
+2026-02-25 14:58:22 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — Slow Response (1145ms) — Backend congestion (health=28, failure_prob=5.7%, confidence=0.77)
+2026-02-25 14:59:32 | INFO     | drift                     | Drift resolved: anomaly rate returned to normal
+2026-02-25 15:05:36 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — Slow Response (2171ms) — Backend congestion (health=13, failure_prob=55.6%, confidence=0.86)
+2026-02-25 15:05:39 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — Slow Response (1718ms) — Backend congestion (health=16, failure_prob=80.5%, confidence=0.84)
+2026-02-25 15:06:08 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-02-25 15:08:09 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 8.50% sustained for 120s — model retraining recommended
+2026-02-25 15:12:48 | INFO     | drift                     | Drift resolved: anomaly rate returned to normal
+2026-02-25 15:47:51 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — Slow Response (841ms) — Backend congestion (health=34, failure_prob=3.0%, confidence=1.00)
+2026-02-25 15:47:59 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Network (4128 KB/s) — Heavy data transfer (health=31, failure_prob=85.4%, confidence=1.00)
+2026-02-25 15:52:21 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — Slow Response (2230ms) — Backend congestion (health=18, failure_prob=86.1%, confidence=1.00)
+2026-02-25 15:52:23 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — Slow Response (691ms) — Backend congestion (health=25, failure_prob=88.4%, confidence=0.93)
+2026-02-25 15:59:30 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — Slow Response (479ms) — Backend congestion (health=50, failure_prob=0.4%, confidence=0.74)
+2026-02-25 21:48:43 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High CPU (92%) — Check compute-heavy processes (health=35, failure_prob=39.7%, confidence=0.80)
+2026-02-25 21:48:45 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — Slow Response (1049ms) — Backend congestion (health=15, failure_prob=97.2%, confidence=1.00)
+2026-03-02 14:54:43 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-02 14:54:43 | INFO     | model                     | Model loaded in 0.044s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-02 14:55:17 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — Slow Response (824ms) — Backend congestion (health=29, failure_prob=1.3%, confidence=0.99)
+2026-03-02 14:56:20 | INFO     | auth                      | API auth DISABLED (no API_KEYS env var set)
+2026-03-02 15:05:20 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-02 15:05:20 | INFO     | model                     | Model loaded in 0.050s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-02 15:05:26 | INFO     | main                      | Engine shut down
+2026-03-02 15:15:03 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-02 15:15:03 | INFO     | model                     | Model loaded in 0.039s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-02 15:15:45 | INFO     | auth                      | API auth DISABLED (no API_KEYS env var set)
+2026-03-02 15:16:31 | INFO     | main                      | Manual retrain triggered for local
+2026-03-02 15:16:31 | INFO     | retraining                | Retraining started for server_id=local
+2026-03-02 15:16:34 | INFO     | retraining                | Backed up isolation_model.pkl → isolation_model.pkl.20260302_151634.bak
+2026-03-02 15:16:34 | INFO     | retraining                | Backed up failure_model.pkl → failure_model.pkl.20260302_151634.bak
+2026-03-02 15:16:35 | INFO     | retraining                | Retraining complete: version=v2.20260302_151635, samples=2995, time=4.2s
+2026-03-02 15:16:36 | INFO     | model                     | Model loaded in 0.150s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-02 15:16:41 | WARNING  | main                      | Failure injection started: 15 spikes
+2026-03-02 15:16:45 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — Slow Response (498ms) — Backend congestion (health=21, failure_prob=97.7%, confidence=0.93)
+2026-03-02 15:16:47 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High CPU (93%) — Check compute-heavy processes (health=8, failure_prob=99.8%, confidence=0.93)
+2026-03-02 15:16:48 | INFO     | main                      | Failure injection stopped
+2026-03-02 15:16:49 | WARNING  | drift                     | Drift suspected: anomaly rate 8.00% > threshold 6.00%
+2026-03-02 15:17:28 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (84%) — Possible memory leak or cache bloat (health=58, failure_prob=0.1%, confidence=0.75)
+2026-03-02 15:18:50 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 6.48% sustained for 120s — model retraining recommended
+2026-03-02 15:19:08 | INFO     | drift                     | Drift resolved: anomaly rate returned to normal
+2026-03-07 11:06:48 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-07 11:06:48 | INFO     | model                     | Model loaded in 0.035s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-07 11:07:20 | INFO     | auth                      | API auth DISABLED (no API_KEYS env var set)
+2026-03-07 11:08:58 | INFO     | main                      | Engine shut down
+2026-03-07 11:39:58 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-07 11:40:02 | INFO     | model                     | Model loaded in 0.033s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-07 11:40:05 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (336) — Too many processes running (health=43, failure_prob=0.0%, confidence=0.70)
+2026-03-07 11:40:06 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (336) — Too many processes running (health=44, failure_prob=0.0%, confidence=0.69)
+2026-03-07 20:56:18 | WARNING  | drift                     | Drift suspected: anomaly rate 72.00% > threshold 6.00%
+2026-03-07 20:57:31 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (80%) — Possible memory leak or cache bloat (health=42, failure_prob=0.2%, confidence=0.92)
+2026-03-07 20:57:32 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (80%) — Possible memory leak or cache bloat (health=41, failure_prob=0.4%, confidence=0.87)
+2026-03-07 20:58:11 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (82%) — Possible memory leak or cache bloat (health=58, failure_prob=0.1%, confidence=0.63)
+2026-03-07 20:58:12 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (82%) — Possible memory leak or cache bloat (health=58, failure_prob=0.1%, confidence=0.63)
+2026-03-07 20:58:19 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 42.42% sustained for 120s — model retraining recommended
+2026-03-07 20:58:41 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Network (972 KB/s) — Heavy data transfer (health=40, failure_prob=0.5%, confidence=0.96)
+2026-03-07 20:58:42 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (81%) — Possible memory leak or cache bloat (health=36, failure_prob=2.1%, confidence=1.00)
+2026-03-07 20:59:16 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (80%) — Possible memory leak or cache bloat (health=36, failure_prob=4.9%, confidence=0.97)
+2026-03-07 20:59:17 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (80%) — Possible memory leak or cache bloat (health=50, failure_prob=8.4%, confidence=0.72)
+2026-03-07 21:01:08 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (82%) — Possible memory leak or cache bloat (health=53, failure_prob=1.0%, confidence=0.62)
+2026-03-07 21:01:10 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (82%) — Possible memory leak or cache bloat (health=59, failure_prob=1.7%, confidence=0.53)
+2026-03-07 21:01:42 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (82%) — Possible memory leak or cache bloat (health=49, failure_prob=22.9%, confidence=0.68)
+2026-03-07 21:01:43 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (82%) — Possible memory leak or cache bloat (health=54, failure_prob=24.2%, confidence=0.61)
+2026-03-07 21:02:00 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (83%) — Possible memory leak or cache bloat (health=59, failure_prob=22.0%, confidence=0.52)
+2026-03-07 21:04:18 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (79%) — Possible memory leak or cache bloat (health=43, failure_prob=0.7%, confidence=0.77)
+2026-03-07 21:04:19 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (79%) — Possible memory leak or cache bloat (health=55, failure_prob=0.9%, confidence=0.58)
+2026-03-07 21:04:54 | INFO     | auth                      | API auth DISABLED (no API_KEYS env var set)
+2026-03-07 21:06:08 | INFO     | drift                     | Drift resolved: anomaly rate returned to normal
+2026-03-07 21:06:58 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (344) — Too many processes running (health=55, failure_prob=0.0%, confidence=0.65)
+2026-03-07 21:06:59 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (343) — Too many processes running (health=57, failure_prob=0.0%, confidence=0.61)
+2026-03-07 21:09:34 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (349) — Too many processes running (health=56, failure_prob=0.0%, confidence=0.71)
+2026-03-07 21:09:35 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (371) — Too many processes running (health=50, failure_prob=0.1%, confidence=0.82)
+2026-03-07 21:10:35 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (362) — Too many processes running (health=46, failure_prob=0.2%, confidence=0.82)
+2026-03-07 21:10:36 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (361) — Too many processes running (health=49, failure_prob=0.7%, confidence=0.84)
+2026-03-07 21:10:38 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-03-07 21:12:03 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (349) — Too many processes running (health=60, failure_prob=0.1%, confidence=0.65)
+2026-03-07 21:12:05 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (353) — Too many processes running (health=60, failure_prob=0.1%, confidence=0.65)
+2026-03-07 21:12:39 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 33.50% sustained for 120s — model retraining recommended
+2026-03-07 21:12:43 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (348) — Too many processes running (health=55, failure_prob=0.1%, confidence=0.73)
+2026-03-07 21:12:45 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (348) — Too many processes running (health=61, failure_prob=0.3%, confidence=0.63)
+2026-03-07 21:13:08 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (347) — Too many processes running (health=58, failure_prob=0.0%, confidence=0.81)
+2026-03-07 21:13:09 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (347) — Too many processes running (health=59, failure_prob=0.0%, confidence=0.80)
+2026-03-07 21:14:42 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (343) — Too many processes running (health=57, failure_prob=0.0%, confidence=0.84)
+2026-03-07 21:14:43 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (343) — Too many processes running (health=60, failure_prob=0.0%, confidence=0.77)
+2026-03-07 21:16:28 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (341) — Too many processes running (health=59, failure_prob=0.0%, confidence=0.80)
+2026-03-07 21:16:29 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (341) — Too many processes running (health=60, failure_prob=0.0%, confidence=0.78)
+2026-03-07 21:16:53 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (342) — Too many processes running (health=59, failure_prob=0.0%, confidence=0.79)
+2026-03-07 21:16:54 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (348) — Too many processes running (health=60, failure_prob=0.0%, confidence=0.77)
+2026-03-07 21:17:16 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (340) — Too many processes running (health=61, failure_prob=0.0%, confidence=0.75)
+2026-03-07 21:17:17 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (379) — Too many processes running (health=48, failure_prob=0.2%, confidence=1.00)
+2026-03-07 21:20:00 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (343) — Too many processes running (health=61, failure_prob=0.0%, confidence=0.75)
+2026-03-07 21:20:05 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (342) — Too many processes running (health=58, failure_prob=0.1%, confidence=0.81)
+2026-03-07 21:20:33 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (339) — Too many processes running (health=57, failure_prob=0.3%, confidence=0.81)
+2026-03-07 21:23:37 | INFO     | drift                     | Drift resolved: anomaly rate returned to normal
+2026-03-07 21:26:30 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (339) — Too many processes running (health=60, failure_prob=0.0%, confidence=0.81)
+2026-03-07 21:26:31 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (339) — Too many processes running (health=61, failure_prob=0.0%, confidence=0.79)
+2026-03-07 21:26:42 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-03-07 21:28:43 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 13.50% sustained for 120s — model retraining recommended
+2026-03-07 21:28:46 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (345) — Too many processes running (health=61, failure_prob=0.0%, confidence=0.76)
+2026-03-07 21:30:15 | INFO     | drift                     | Drift resolved: anomaly rate returned to normal
+2026-03-07 21:31:13 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (339) — Too many processes running (health=58, failure_prob=0.0%, confidence=0.82)
+2026-03-07 21:31:14 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (339) — Too many processes running (health=62, failure_prob=0.0%, confidence=0.74)
+2026-03-07 21:35:40 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (339) — Too many processes running (health=59, failure_prob=0.0%, confidence=0.84)
+2026-03-07 21:35:41 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (342) — Too many processes running (health=62, failure_prob=0.0%, confidence=0.78)
+2026-03-07 21:36:59 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-03-07 21:36:59 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (337) — Too many processes running (health=61, failure_prob=0.1%, confidence=0.78)
+2026-03-07 21:38:59 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 7.00% sustained for 120s — model retraining recommended
+2026-03-07 21:39:10 | INFO     | drift                     | Drift resolved: anomaly rate returned to normal
+2026-03-07 21:48:54 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Network (2250 KB/s) — Heavy data transfer (health=43, failure_prob=0.1%, confidence=1.00)
+2026-03-07 21:48:55 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Network (1392 KB/s) — Heavy data transfer (health=45, failure_prob=0.1%, confidence=0.95)
+2026-03-07 21:49:16 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (335) — Too many processes running (health=56, failure_prob=0.1%, confidence=0.76)
+2026-03-07 21:49:20 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (341) — Too many processes running (health=51, failure_prob=0.7%, confidence=0.84)
+2026-03-07 21:49:22 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-03-07 21:51:23 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 7.50% sustained for 120s — model retraining recommended
+2026-03-07 21:52:24 | INFO     | drift                     | Drift resolved: anomaly rate returned to normal
+2026-03-07 21:53:23 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (346) — Too many processes running (health=60, failure_prob=0.1%, confidence=0.69)
+2026-03-07 21:53:24 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (363) — Too many processes running (health=61, failure_prob=0.1%, confidence=0.68)
+2026-03-07 21:56:17 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (336) — Too many processes running (health=62, failure_prob=0.0%, confidence=0.66)
+2026-03-07 21:56:18 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (345) — Too many processes running (health=52, failure_prob=0.2%, confidence=0.83)
+2026-03-07 21:57:01 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (337) — Too many processes running (health=54, failure_prob=0.0%, confidence=0.79)
+2026-03-07 22:01:11 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (342) — Too many processes running (health=58, failure_prob=0.1%, confidence=0.86)
+2026-03-07 22:01:12 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (353) — Too many processes running (health=49, failure_prob=0.5%, confidence=1.00)
+2026-03-07 22:01:28 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-03-07 22:03:28 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 6.50% sustained for 120s — model retraining recommended
+2026-03-07 22:04:12 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (338) — Too many processes running (health=60, failure_prob=0.0%, confidence=0.78)
+2026-03-07 22:04:17 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High CPU (78%) — Check compute-heavy processes (health=54, failure_prob=0.9%, confidence=0.84)
+2026-03-07 22:04:44 | INFO     | drift                     | Drift resolved: anomaly rate returned to normal
+2026-03-07 22:08:02 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (337) — Too many processes running (health=60, failure_prob=0.0%, confidence=0.78)
+2026-03-07 22:08:03 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (340) — Too many processes running (health=62, failure_prob=0.1%, confidence=0.74)
+2026-03-07 22:10:21 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-03-07 22:10:23 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (339) — Too many processes running (health=58, failure_prob=0.0%, confidence=0.81)
+2026-03-07 22:10:26 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (339) — Too many processes running (health=51, failure_prob=0.4%, confidence=0.95)
+2026-03-07 22:17:43 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (340) — Too many processes running (health=56, failure_prob=0.1%, confidence=0.88)
+2026-03-07 22:17:44 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (359) — Too many processes running (health=49, failure_prob=0.4%, confidence=1.00)
+2026-03-07 22:17:52 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-03-07 22:19:52 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 8.00% sustained for 120s — model retraining recommended
+2026-03-07 22:21:16 | INFO     | drift                     | Drift resolved: anomaly rate returned to normal
+2026-03-07 22:23:37 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (337) — Too many processes running (health=62, failure_prob=0.0%, confidence=0.74)
+2026-03-07 22:23:38 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (337) — Too many processes running (health=59, failure_prob=0.0%, confidence=0.79)
+2026-03-07 22:23:47 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-03-07 22:25:48 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 8.00% sustained for 120s — model retraining recommended
+2026-03-07 22:25:54 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (342) — Too many processes running (health=52, failure_prob=0.3%, confidence=0.94)
+2026-03-07 22:25:55 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (339) — Too many processes running (health=56, failure_prob=0.8%, confidence=0.86)
+2026-03-07 22:27:15 | INFO     | drift                     | Drift resolved: anomaly rate returned to normal
+2026-03-07 22:27:48 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (339) — Too many processes running (health=61, failure_prob=0.8%, confidence=0.79)
+2026-03-07 22:27:56 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (337) — Too many processes running (health=61, failure_prob=1.9%, confidence=0.79)
+2026-03-07 22:28:00 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (337) — Too many processes running (health=57, failure_prob=3.6%, confidence=0.88)
+2026-03-07 22:29:12 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-03-07 22:29:14 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (339) — Too many processes running (health=52, failure_prob=0.2%, confidence=0.98)
+2026-03-07 22:29:15 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (342) — Too many processes running (health=54, failure_prob=0.6%, confidence=0.94)
+2026-03-07 22:31:40 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (342) — Too many processes running (health=58, failure_prob=0.1%, confidence=0.83)
+2026-03-07 22:31:42 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (342) — Too many processes running (health=62, failure_prob=0.4%, confidence=0.74)
+2026-03-07 22:34:43 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (335) — Too many processes running (health=61, failure_prob=0.1%, confidence=0.78)
+2026-03-07 22:34:44 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (335) — Too many processes running (health=62, failure_prob=0.1%, confidence=0.76)
+2026-03-07 22:34:48 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-03-07 22:38:33 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (339) — Too many processes running (health=62, failure_prob=0.0%, confidence=0.76)
+2026-03-07 22:38:34 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (371) — Too many processes running (health=57, failure_prob=0.1%, confidence=0.89)
+2026-03-07 22:41:33 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (334) — Too many processes running (health=58, failure_prob=0.1%, confidence=0.87)
+2026-03-07 22:41:35 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-03-07 22:41:35 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (334) — Too many processes running (health=61, failure_prob=0.2%, confidence=0.79)
+2026-03-07 22:43:04 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Process Count (337) — Too many processes running (health=60, failure_prob=0.1%, confidence=0.81)
+2026-03-07 22:43:06 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Process Count (343) — Too many processes running (health=57, failure_prob=0.4%, confidence=0.88)
+2026-03-07 22:47:56 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (79%) — Possible memory leak or cache bloat (health=45, failure_prob=1.1%, confidence=1.00)
+2026-03-07 23:51:22 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (79%) — Possible memory leak or cache bloat (health=51, failure_prob=3.6%, confidence=0.87)
+2026-03-07 23:51:32 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-03-08 11:01:55 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-08 11:01:55 | INFO     | model                     | Model loaded in 0.039s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-08 11:01:59 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — Heavy Disk I/O (74.0 MB/s) — Large file operations or swap activity (health=45, failure_prob=73.9%, confidence=0.66)
+2026-03-08 11:02:16 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Network (1445 KB/s) — Heavy data transfer (health=33, failure_prob=9.6%, confidence=1.00)
+2026-03-08 11:02:30 | INFO     | auth                      | API auth DISABLED (no API_KEYS env var set)
+2026-03-08 11:02:52 | WARNING  | drift                     | Drift suspected: anomaly rate 74.00% > threshold 6.00%
+2026-03-08 11:03:13 | INFO     | main                      | Manual retrain triggered
+2026-03-08 11:03:13 | INFO     | retraining                | Retraining started
+2026-03-08 11:03:15 | INFO     | retraining                | Backed up isolation_model.pkl → isolation_model.pkl.20260308_110315.bak
+2026-03-08 11:03:15 | INFO     | retraining                | Backed up failure_model.pkl → failure_model.pkl.20260308_110315.bak
+2026-03-08 11:03:15 | INFO     | retraining                | Removed old backup: isolation_model.pkl.20260225_133302.bak
+2026-03-08 11:03:15 | INFO     | retraining                | Removed old backup: failure_model.pkl.20260225_133302.bak
+2026-03-08 11:03:16 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (82%) — Possible memory leak or cache bloat (health=46, failure_prob=1.4%, confidence=0.71)
+2026-03-08 11:03:16 | INFO     | retraining                | Retraining complete: version=v2.20260308_110316, samples=2995, time=3.5s
+2026-03-08 11:03:17 | INFO     | model                     | Model loaded in 0.111s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-08 11:03:26 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (82%) — Possible memory leak or cache bloat (health=59, failure_prob=6.4%, confidence=0.49)
+2026-03-08 11:03:41 | INFO     | main                      | Engine shut down
+2026-03-08 11:11:47 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-08 11:11:47 | INFO     | model                     | Model loaded in 0.038s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-08 11:11:59 | INFO     | captcha                   | CAPTCHA generated: 11 - 9 = ?
+2026-03-08 11:12:03 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (82%) — Possible memory leak or cache bloat (health=53, failure_prob=11.2%, confidence=0.70)
+2026-03-08 11:12:06 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (82%) — Possible memory leak or cache bloat (health=47, failure_prob=24.2%, confidence=0.82)
+2026-03-08 11:12:15 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — Heavy Disk I/O (290.4 MB/s) — Large file operations or swap activity (health=35, failure_prob=80.3%, confidence=0.90)
+2026-03-08 11:12:16 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (86%) — Possible memory leak or cache bloat (health=30, failure_prob=95.1%, confidence=1.00)
+2026-03-08 11:12:28 | INFO     | captcha                   | CAPTCHA generated: 11 + 7 = ?
+2026-03-08 11:12:39 | INFO     | auth                      | API auth DISABLED (no API_KEYS env var set)
+2026-03-08 11:12:45 | WARNING  | drift                     | Drift suspected: anomaly rate 40.00% > threshold 6.00%
+2026-03-08 11:12:49 | INFO     | captcha                   | CAPTCHA verified successfully
+2026-03-08 11:13:16 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (88%) — Possible memory leak or cache bloat (health=56, failure_prob=6.4%, confidence=0.53)
+2026-03-08 11:13:17 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Network (1062 KB/s) — Heavy data transfer (health=54, failure_prob=7.1%, confidence=0.56)
+2026-03-08 11:13:34 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (89%) — Possible memory leak or cache bloat (health=49, failure_prob=6.2%, confidence=0.57)
+2026-03-08 11:13:36 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (88%) — Possible memory leak or cache bloat (health=58, failure_prob=9.3%, confidence=0.51)
+2026-03-08 11:14:44 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Network (2132 KB/s) — Heavy data transfer (health=36, failure_prob=3.5%, confidence=0.89)
+2026-03-08 11:14:45 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 28.66% sustained for 120s — model retraining recommended
+2026-03-08 11:14:45 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Network (1318 KB/s) — Heavy data transfer (health=39, failure_prob=12.7%, confidence=0.85)
+2026-03-08 11:15:02 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (86%) — Possible memory leak or cache bloat (health=58, failure_prob=0.5%, confidence=0.57)
+2026-03-08 11:15:16 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-08 11:15:16 | INFO     | model                     | Model loaded in 0.027s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-08 11:15:18 | INFO     | main                      | Engine shut down
+2026-03-08 11:15:20 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (85%) — Possible memory leak or cache bloat (health=50, failure_prob=5.3%, confidence=0.69)
+2026-03-08 11:15:23 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (86%) — Possible memory leak or cache bloat (health=43, failure_prob=60.8%, confidence=0.68)
+2026-03-08 11:15:38 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-08 11:15:38 | INFO     | model                     | Model loaded in 0.026s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-08 11:15:39 | INFO     | main                      | Engine shut down
+2026-03-08 11:15:42 | INFO     | captcha                   | CAPTCHA generated: 4 + 12 = ?
+2026-03-08 11:15:56 | INFO     | captcha                   | CAPTCHA verified successfully
+2026-03-08 11:16:40 | INFO     | main                      | Engine shut down
+2026-03-08 11:17:23 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-08 11:17:23 | INFO     | model                     | Model loaded in 0.027s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-08 11:17:28 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (79%) — Possible memory leak or cache bloat (health=58, failure_prob=2.1%, confidence=0.52)
+2026-03-08 11:17:29 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (79%) — Possible memory leak or cache bloat (health=58, failure_prob=2.8%, confidence=0.52)
+2026-03-08 11:17:47 | INFO     | captcha                   | CAPTCHA generated: 4 - 2 = ?
+2026-03-08 11:17:52 | INFO     | captcha                   | CAPTCHA verified successfully
+2026-03-08 11:18:08 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (82%) — Possible memory leak or cache bloat (health=59, failure_prob=0.2%, confidence=0.74)
+2026-03-08 11:18:10 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High CPU (84%) — Check compute-heavy processes (health=45, failure_prob=9.6%, confidence=0.86)
+2026-03-08 11:18:19 | WARNING  | drift                     | Drift suspected: anomaly rate 26.00% > threshold 6.00%
+2026-03-08 11:19:10 | INFO     | main                      | Engine shut down
+2026-03-08 11:20:10 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-08 11:20:10 | INFO     | model                     | Model loaded in 0.027s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-08 11:20:46 | INFO     | captcha                   | CAPTCHA generated: 13 + 6 = ?
+2026-03-08 11:20:50 | INFO     | captcha                   | CAPTCHA verified successfully
+2026-03-08 11:21:44 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (82%) — Possible memory leak or cache bloat (health=58, failure_prob=0.0%, confidence=0.81)
+2026-03-08 11:21:45 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (82%) — Possible memory leak or cache bloat (health=57, failure_prob=0.1%, confidence=0.83)
+2026-03-08 11:21:56 | INFO     | captcha                   | CAPTCHA generated: 7 + 10 = ?
+2026-03-08 11:22:06 | INFO     | captcha                   | CAPTCHA verified successfully
+2026-03-08 11:22:27 | WARNING  | drift                     | Drift suspected: anomaly rate 6.15% > threshold 6.00%
+2026-03-08 11:22:34 | WARNING  | drift                     | Drift suspected: anomaly rate 6.62% > threshold 6.00%
+2026-03-08 11:22:34 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (86%) — Possible memory leak or cache bloat (health=47, failure_prob=67.1%, confidence=0.89)
+2026-03-08 11:40:05 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (83%) — Possible memory leak or cache bloat (health=59, failure_prob=0.5%, confidence=1.00)
+2026-03-08 11:40:06 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High CPU (88%) — Check compute-heavy processes (health=44, failure_prob=19.4%, confidence=1.00)
+2026-03-08 11:41:20 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (81%) — Possible memory leak or cache bloat (health=59, failure_prob=1.9%, confidence=0.84)
+2026-03-08 11:41:21 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (81%) — Possible memory leak or cache bloat (health=41, failure_prob=23.8%, confidence=1.00)
+2026-03-08 11:41:25 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-03-08 11:43:15 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (80%) — Possible memory leak or cache bloat (health=55, failure_prob=0.3%, confidence=0.77)
+2026-03-08 11:43:16 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (81%) — Possible memory leak or cache bloat (health=55, failure_prob=0.8%, confidence=0.76)
+2026-03-08 11:43:26 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 12.50% sustained for 120s — model retraining recommended
+2026-03-08 11:43:35 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (84%) — Possible memory leak or cache bloat (health=53, failure_prob=2.1%, confidence=0.80)
+2026-03-08 11:44:31 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (85%) — Possible memory leak or cache bloat (health=55, failure_prob=75.7%, confidence=0.77)
+2026-03-08 11:44:32 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (85%) — Possible memory leak or cache bloat (health=57, failure_prob=79.1%, confidence=0.73)
+2026-03-08 11:44:37 | INFO     | captcha                   | CAPTCHA generated: 9 - 8 = ?
+2026-03-08 11:45:11 | INFO     | captcha                   | CAPTCHA verified successfully
+2026-03-08 11:45:16 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High CPU (92%) — Check compute-heavy processes (health=39, failure_prob=89.7%, confidence=0.74)
+2026-03-08 11:45:17 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (86%) — Possible memory leak or cache bloat (health=43, failure_prob=95.2%, confidence=0.84)
+2026-03-08 11:45:44 | INFO     | main                      | Engine shut down
+2026-03-08 11:46:20 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-08 11:46:20 | INFO     | model                     | Model loaded in 0.029s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-08 11:46:21 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (80%) — Possible memory leak or cache bloat (health=55, failure_prob=35.2%, confidence=0.55)
+2026-03-08 11:46:27 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (82%) — Possible memory leak or cache bloat (health=50, failure_prob=34.7%, confidence=0.59)
+2026-03-08 11:46:43 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (82%) — Possible memory leak or cache bloat (health=58, failure_prob=2.2%, confidence=0.71)
+2026-03-08 11:46:58 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (83%) — Possible memory leak or cache bloat (health=51, failure_prob=3.6%, confidence=0.71)
+2026-03-08 11:47:15 | WARNING  | drift                     | Drift suspected: anomaly rate 32.00% > threshold 6.00%
+2026-03-08 11:47:20 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (83%) — Possible memory leak or cache bloat (health=56, failure_prob=3.7%, confidence=0.63)
+2026-03-08 11:47:24 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (83%) — Possible memory leak or cache bloat (health=58, failure_prob=21.0%, confidence=0.59)
+2026-03-08 11:47:45 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Network (1026 KB/s) — Heavy data transfer (health=38, failure_prob=4.5%, confidence=1.00)
+2026-03-08 11:47:46 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Network (945 KB/s) — Heavy data transfer (health=43, failure_prob=7.9%, confidence=0.89)
+2026-03-08 11:48:53 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (83%) — Possible memory leak or cache bloat (health=56, failure_prob=4.9%, confidence=0.67)
+2026-03-08 11:48:54 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (84%) — Possible memory leak or cache bloat (health=59, failure_prob=10.1%, confidence=0.63)
+2026-03-08 11:49:15 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 30.63% sustained for 120s — model retraining recommended
+2026-03-08 11:51:24 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (84%) — Possible memory leak or cache bloat (health=57, failure_prob=7.0%, confidence=0.67)
+2026-03-08 11:51:25 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (83%) — Possible memory leak or cache bloat (health=54, failure_prob=9.5%, confidence=0.73)
+2026-03-08 11:51:43 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (86%) — Possible memory leak or cache bloat (health=58, failure_prob=38.2%, confidence=0.65)
+2026-03-08 11:51:46 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (86%) — Possible memory leak or cache bloat (health=49, failure_prob=78.5%, confidence=0.80)
+2026-03-08 12:03:37 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-08 12:03:37 | INFO     | model                     | Model loaded in 0.026s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-08 12:03:39 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (81%) — Possible memory leak or cache bloat (health=37, failure_prob=99.2%, confidence=0.73)
+2026-03-08 12:04:15 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (82%) — Possible memory leak or cache bloat (health=59, failure_prob=0.4%, confidence=0.61)
+2026-03-08 12:05:49 | INFO     | main                      | Engine shut down
+2026-03-08 12:11:35 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-08 12:11:35 | INFO     | model                     | Model loaded in 0.025s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-08 12:12:02 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (91%) — Possible memory leak or cache bloat (health=47, failure_prob=8.7%, confidence=1.00)
+2026-03-08 12:12:03 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — Heavy Disk I/O (192.0 MB/s) — Large file operations or swap activity (health=19, failure_prob=90.2%, confidence=1.00)
+2026-03-08 12:12:33 | WARNING  | drift                     | Drift suspected: anomaly rate 20.00% > threshold 6.00%
+2026-03-08 12:12:49 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (88%) — Possible memory leak or cache bloat (health=54, failure_prob=55.1%, confidence=0.40)
+2026-03-08 12:12:57 | INFO     | captcha                   | CAPTCHA generated: 9 × 2 = ?
+2026-03-08 12:12:58 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (89%) — Possible memory leak or cache bloat (health=52, failure_prob=29.7%, confidence=0.44)
+2026-03-08 12:12:59 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (89%) — Possible memory leak or cache bloat (health=48, failure_prob=56.6%, confidence=0.52)
+2026-03-08 12:13:13 | INFO     | captcha                   | CAPTCHA verified successfully
+2026-03-08 12:13:25 | INFO     | captcha                   | CAPTCHA generated: 11 × 7 = ?
+2026-03-08 12:13:32 | INFO     | captcha                   | CAPTCHA verified successfully
+2026-03-08 12:17:35 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-08 12:17:35 | INFO     | model                     | Model loaded in 0.051s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-08 12:17:38 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (90%) — Possible memory leak or cache bloat (health=44, failure_prob=98.5%, confidence=0.61)
+2026-03-08 12:18:17 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (92%) — Possible memory leak or cache bloat (health=49, failure_prob=4.6%, confidence=0.81)
+2026-03-08 12:18:19 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (92%) — Possible memory leak or cache bloat (health=45, failure_prob=10.8%, confidence=0.93)
+2026-03-08 12:18:31 | WARNING  | drift                     | Drift suspected: anomaly rate 24.00% > threshold 6.00%
+2026-03-08 12:19:00 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (92%) — Possible memory leak or cache bloat (health=51, failure_prob=92.7%, confidence=0.62)
+2026-03-08 12:19:34 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Network (1188 KB/s) — Heavy data transfer (health=48, failure_prob=19.4%, confidence=0.74)
+2026-03-08 12:19:35 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (92%) — Possible memory leak or cache bloat (health=53, failure_prob=30.3%, confidence=0.61)
+2026-03-08 12:20:32 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 30.72% sustained for 120s — model retraining recommended
+2026-03-08 12:23:10 | INFO     | drift                     | Drift resolved: anomaly rate returned to normal
+2026-03-08 12:23:14 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-03-08 12:24:31 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (88%) — Possible memory leak or cache bloat (health=44, failure_prob=80.1%, confidence=0.86)
+2026-03-08 12:24:33 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (88%) — Possible memory leak or cache bloat (health=47, failure_prob=84.8%, confidence=0.80)
+2026-03-08 12:25:12 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (90%) — Possible memory leak or cache bloat (health=53, failure_prob=63.5%, confidence=0.69)
+2026-03-08 12:25:24 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (91%) — Possible memory leak or cache bloat (health=52, failure_prob=63.5%, confidence=0.70)
+2026-03-08 12:25:28 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (92%) — Possible memory leak or cache bloat (health=49, failure_prob=87.5%, confidence=0.76)
+2026-03-08 12:25:44 | WARNING  | drift                     | Drift suspected: anomaly rate 6.50% > threshold 6.00%
+2026-03-08 12:25:53 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (90%) — Possible memory leak or cache bloat (health=52, failure_prob=91.8%, confidence=0.69)
+2026-03-08 12:25:54 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (90%) — Possible memory leak or cache bloat (health=31, failure_prob=99.7%, confidence=0.94)
+2026-03-08 12:27:44 | ERROR    | drift                     | DRIFT CONFIRMED: anomaly rate 16.00% sustained for 120s — model retraining recommended
+2026-03-08 12:29:33 | INFO     | drift                     | Drift resolved: anomaly rate returned to normal
+2026-03-08 12:34:17 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (88%) — Possible memory leak or cache bloat (health=50, failure_prob=15.1%, confidence=0.58)
+2026-03-08 12:34:19 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (88%) — Possible memory leak or cache bloat (health=53, failure_prob=25.4%, confidence=0.59)
+2026-03-08 12:37:25 | INFO     | main                      | Engine shut down
+2026-03-08 12:37:46 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-08 12:37:46 | INFO     | model                     | Model loaded in 0.033s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-08 12:38:08 | INFO     | main                      | Engine shut down
+2026-03-08 12:38:22 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-08 12:38:22 | INFO     | model                     | Model loaded in 0.041s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-08 12:38:57 | INFO     | main                      | Engine shut down
+2026-03-08 12:39:07 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-08 12:39:07 | INFO     | model                     | Model loaded in 0.031s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-08 12:39:25 | INFO     | main                      | Engine shut down
+2026-03-08 12:44:43 | INFO     | main                      | System Failure Early Warning Engine started
+2026-03-08 12:44:43 | INFO     | model                     | Model loaded in 0.031s from D:\PROJECTS\SYSTEM\models\isolation_model.pkl
+2026-03-08 12:45:05 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Memory (86%) — Possible memory leak or cache bloat (health=56, failure_prob=5.2%, confidence=0.76)
+2026-03-08 12:45:07 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (86%) — Possible memory leak or cache bloat (health=55, failure_prob=12.8%, confidence=0.76)
+2026-03-08 12:45:42 | WARNING  | drift                     | Drift suspected: anomaly rate 8.00% > threshold 6.00%
+2026-03-08 12:50:36 | WARNING  | main                      | ALERT [WARNING]: Risk escalated to YELLOW — High Network (10444 KB/s) — Heavy data transfer (health=31, failure_prob=48.4%, confidence=1.00)
+2026-03-08 12:50:38 | WARNING  | main                      | ALERT [CRITICAL]: Risk escalated to RED — High Memory (87%) — Possible memory leak or cache bloat (health=35, failure_prob=72.1%, confidence=0.92)
