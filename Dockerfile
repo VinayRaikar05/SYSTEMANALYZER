@@ -18,6 +18,12 @@ COPY backend/ ./backend/
 COPY frontend/ ./frontend/
 COPY models/ ./models/
 
+# Verify LFS files were actually pulled (pointers are <200 bytes)
+RUN if [ $(stat -c%s "models/isolation_model.pkl") -lt 1000 ]; then \
+    echo "Error: models/isolation_model.pkl is an LFS pointer, not the actual file. Ensure Git LFS is enabled." >&2; \
+    exit 1; \
+    fi
+
 # Create dirs
 RUN mkdir -p /app/data /app/logs
 

@@ -60,7 +60,7 @@ def generate_captcha() -> dict:
     return {"token": token, "question": question}
 
 
-def verify_captcha(token: str, user_answer: str) -> bool:
+def verify_captcha(token: str, user_answer: str) -> str | bool:
     """Verify a CAPTCHA answer. Returns True if correct."""
     _cleanup()
 

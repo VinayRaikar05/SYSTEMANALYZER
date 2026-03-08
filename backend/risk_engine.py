@@ -45,10 +45,9 @@ def compute_metric_severity(metrics: dict) -> int:
 def compute_health_score(
     anomaly_score: float,
     metrics: dict | None = None,
-    sensitivity: int = 5,
 ) -> int:
     """Map Isolation Forest score to 0–100, apply severity penalty."""
-    sens_mult = 0.6 + (sensitivity / 10) * 0.8
+    sens_mult = 0.6 + (5 / 10) * 0.8  # fixed sensitivity = 5
     adj_score = anomaly_score / sens_mult
 
     if adj_score >= 0.15:
