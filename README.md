@@ -1,3 +1,14 @@
+---
+title: System Failure Early Warning Engine
+emoji: ⚡
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_port: 7860
+license: mit
+short_description: AI system monitoring with failure prediction
+---
+
 # ⚡ AI-Based System Failure Early Warning Engine
 
 An AI-powered system monitoring platform that collects real-time system metrics, detects anomalies using Isolation Forest, predicts failures, explains decisions with SHAP, and self-adapts through drift detection and automated retraining.
